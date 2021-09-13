@@ -1,0 +1,57 @@
+
+apply plugin: 'maven'
+
+/**
+ * 实现目标：
+ * 统一各个模块中“引入同一种依赖包”的管理，并且实现依赖包自动选择release版和snapshot版
+ *
+ */
+ext {
+    //切勿更改
+    //参数sdkactive对应的三个值：local 发布到本地版本，release 发布稳定版本，snapshot 发布抢先版（开发中的不稳定版本）
+    SDK_ACTIVE_LOCAL = 'local'
+    SDK_ACTIVE_RELEASE = 'release'
+    SDK_ACTIVE_SNAPSHOT = 'snapshot'
+    sdk_active = project.hasProperty('sdkactive') ? project.property('sdkactive') : SDK_ACTIVE_LOCAL
+}
+ext {
+    deps = [:]
+
+    //TODO 第三方库在这里补充，方便多个模块对引用的管理
+
+    //使用wrapDeps()包装的依赖可以动态选择release版本或者snapshot版本
+    deps.dynamicfeature = wrapDeps('com.example.mylib:myname:1.0.8.300-SNAPSHOT')
+    //不使用wrapDeps()包装的依赖，该是什么就是什么
+    deps.okhttp = 'com.squareup.okhttp3:okhttp:4.1.0'
+
+}
+
+
+/**
+ * 对依赖进行自动包装
+ * 达到的效果：
+ * 1、在本地调试的时候，无论引入的依赖为release和snapshot版本，则项目就加载对应版本的依赖
+ * 2、上传到服务器自动调试的时候，根据参数-Psdkactive=release决定，将snapshot版本的依赖转成release版本
+ *
+ * 工作原理：
+ * 当同时满足
+ * 1、dependency不是标准的格式，即 group:name:version
+ * 2、运行时参数为release，
+ * 3、第三方依赖为'-SNAPSHOT'时，
+ * 进行以下处理：自动删除原依赖中的'-SNAPSHOT'后缀，即转换成release版的第三方依赖
+ * 否则不处理
+ *
+ *
+ * @param denpendence
+ * @return 如果当前是 release 环境,则删除依赖中的 -SNAPSHOT 后缀，即项目中的依赖不使用SNAPSHOT版本
+ */
+private String wrapDeps(String dependency) {
+    if (dependency.split(':').length == 3
+            && sdk_active == SDK_ACTIVE_RELEASE
+            && dependency.endsWith('-SNAPSHOT')) {
+        return dependency.substring(0, dependency.length() - '-SNAPSHOT'.length())
+    }
+    //否则不处理
+    return dependency
+
+}

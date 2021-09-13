@@ -1,0 +1,323 @@
+
+apply plugin: 'maven'
+
+/**
+ * 实现目标：
+ * 1、通过gradle命令行输入指定参数“sdkactive”进行版本发布（参数值为 local、release、snapshot 不等）
+ * 2、增加archives，可以同时上传多个包到maven仓库
+ * 3、增加filter，筛选需要的artifact才能上传到maven仓库
+ * 4、自动补充依赖，解决增加filter后依赖丢失的问题
+ * 5、对于framework-runtime发布一个特殊的jar包，其余module发布aar包
+ */
+
+
+ext {
+    /**
+     * TODO Maven仓库的地址、访问用户名和密码
+     */
+    MAVEN_LOCAL_URL = rootDir.absolutePath + File.separator + "repository" + File.separator + "snapshot"
+    MAVEN_LOCAL_RELEASE_URL = rootDir.absolutePath + File.separator + "repository" + File.separator + "release"
+    MAVEN_RELEASE_URL = "http://artifactory.xxx.com/artifactory/release/"
+    MAVEN_SNAPSHOT_URL = "http://artifactory.xxx.com/artifactory/snapshot/"
+    MAVEN_USERNAME = cloudartifact_username
+    MAVEN_PASSWORD = cloudartifact_password
+
+
+    /**
+     * groupId : 唯一标识（通常为模块包名，也可以任意）
+     */
+    DEFAULT_GROUP_ID = rootProject.ext.sdk_group_id
+
+    /**
+     * artifactId : 项目名称（通常为类库模块名称，也可以任意）
+     */
+    DEFAULT_ARTIFACT_ID = project.ext.sdk_artifact_name
+
+    /**
+     * version : 版本号
+     */
+    DEFAULT_PUBLISH_VERSION = rootProject.ext.sdk_version_name
+    DEFAULT_PUBLISH_VERSION_SNAPSHOT = rootProject.ext.sdk_version_name + '-SNAPSHOT'
+
+}
+
+
+ext {
+    // 参数sdkactive对应的4个值，切勿更改
+    // release 向maven仓发布稳定版本，
+    // snapshot 向maven发布抢先版（开发中的不稳定版本）
+    // local发布到本地snapshot版本
+    // local_release本地release版本
+    SDK_ACTIVE_RELEASE = 'release'
+    SDK_ACTIVE_SNAPSHOT = 'snapshot'
+    SDK_ACTIVE_LOCAL = 'local'
+    SDK_ACTIVE_LOCAL_RELEASE = 'local_release'
+
+    //
+    SDK_PUBLISH_CONFIG_RELEASE = 'release'
+    SDK_PUBLISH_CONFIG_DEBUG = 'debug'
+
+    FLAVOR_CONFIG_PRODUCT = "product"
+    FLAVOR_CONFIG_STAGING = "staging"
+    FLAVOR_CONFIG_MIRROR = "mirror"
+    FLAVOR_CONFIG_LFTEST = "lftest"
+
+    SDK_FLAVOR_CONFIG_ONLINE = 'online'
+
+    sdk_active = project.hasProperty('sdkactive') ? project.property('sdkactive') : SDK_ACTIVE_LOCAL
+    publish_config = project.hasProperty('publishcfg') ? project.property('publishcfg') : SDK_PUBLISH_CONFIG_RELEASE
+    flavor_config = project.hasProperty('flavorcfg') ? project.property('flavorcfg') : FLAVOR_CONFIG_PRODUCT
+}
+
+
+//================
+//定制化upload
+//===============
+if (project.name == "imsnssdk") {
+    switch (flavor_config) {
+        case FLAVOR_CONFIG_PRODUCT:
+            ext.DEFAULT_ARTIFACT_ID = project.ext.sdk_artifact_name
+            break;
+        case FLAVOR_CONFIG_STAGING:
+            ext.DEFAULT_ARTIFACT_ID = project.ext.sdk_artifact_name_staging
+            break;
+        case FLAVOR_CONFIG_MIRROR:
+            ext.DEFAULT_ARTIFACT_ID = project.ext.sdk_artifact_name_mirror
+            break;
+        case FLAVOR_CONFIG_LFTEST:
+            ext.DEFAULT_ARTIFACT_ID = project.ext.sdk_artifact_name_lftest
+            break;
+        default:
+            ext.DEFAULT_ARTIFACT_ID = project.ext.sdk_artifact_name
+    }
+    project.afterEvaluate {
+        artifacts {
+            archives new File(project.getBuildDir(), "/outputs/aar/imsnssdk-" + flavor_config + "-" + publish_config + ".aar")
+        }
+    }
+}else if (project.name == "framework-runtime-apk") {
+    //apk
+    DEFAULT_ARTIFACT_ID = project.name
+    artifacts {
+        archives(name: DEFAULT_ARTIFACT_ID, file: file("$buildDir/outputs/apk/debug/framework-runtime-debug.apk"))
+    }
+}
+
+
+//=================Upload============================
+//发布到Maven仓库的具体代码
+uploadArchives {
+
+    dependsOn("assemble")
+
+    //获取包含发布信息的对象，该对象中包含了关于发布的一系列信息
+    UploadObject uploadObject = genUploadObject(sdk_active, publish_config, flavor_config)
+
+
+    repositories {
+        mavenDeployer {
+
+            //指定发布的maven仓库以及认证方式
+            repository(url: getUrl(uploadObject)) {
+                authentication(userName: uploadObject.credential.mavenUsername, password: uploadObject.credential.mavenPassword)
+            }
+//            当version 后缀为'-SNAPSHOT'时，会自动使用snapshotRepository
+            snapshotRepository(url: getUrl(uploadObject)) {
+                authentication(userName: uploadObject.credential.mavenUsername, password: uploadObject.credential.mavenPassword)
+            }
+            addFilter('imsdkFilter') { artifact, file ->
+                String packaging = file.name.substring(file.name.lastIndexOf("."))
+                return packaging == ".aar"
+            }.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    if (it.name != "unspecified") {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+                if (project.name == "smack") {
+                    return
+                }
+                // TODO 适配多flavor优化
+                configurations.mirrorImplementation.allDependencies.each {
+                    if (it.name != "unspecified" && flavor_config == "mirror" ) {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+                configurations.stagingImplementation.allDependencies.each {
+                    if (it.name != "unspecified" && flavor_config == "staging" ) {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+                configurations.lftestImplementation.allDependencies.each {
+                    if (it.name != "unspecified" && flavor_config == "lftest" ) {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+                configurations.productImplementation.allDependencies.each {
+                    if (it.name != "unspecified" && flavor_config == "product" ) {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+            }.project {
+                version uploadObject.version
+                groupId uploadObject.groupId
+                artifactId uploadObject.artifactId
+            }
+        }
+    }
+
+}
+
+//=========================utils====================
+//定义若干方法，辅助上面发布的业务处理
+/**
+ *
+ * 如果仓库是http接口，那么直接返回该接口的String
+ * 如果仓库是本地路径，那么需要将该地址封装成uri后再返回
+ * 当url为空时，使用根路径
+ * @return url：可能是String，也可能是uri
+ */
+private Object getUrl(UploadObject uploadObject) {
+    if (uploadObject.mavenUrl == null
+            || uploadObject.mavenUrl.isEmpty()) {
+        return project.rootDir.path
+    }
+    return uploadObject.mavenUrl.toLowerCase().startsWith("http")
+            ? uploadObject.mavenUrl : uri(uploadObject.mavenUrl)
+}
+
+
+/**
+ * 获取包含发布信息的对象。
+ * 该对象中包含了关于发布的一系列信息
+ *
+ * @param sdk_active
+ * @return
+ */
+private UploadObject genUploadObject(sdk_active, publish_config, flavor_config) {
+    UploadObject obj;
+
+    def artifact_id_suffix = publish_config == SDK_PUBLISH_CONFIG_RELEASE ? "" : "-debug"
+    def artifact_id_suffix_flavor = flavor_config == SDK_FLAVOR_CONFIG_ONLINE ? "" : "-"+flavor_config
+    switch (sdk_active) {
+
+        case SDK_ACTIVE_RELEASE:
+            obj = new UploadObject(mavenUrl: MAVEN_RELEASE_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION
+                    , artifactId: DEFAULT_ARTIFACT_ID + artifact_id_suffix + artifact_id_suffix_flavor)
+            break
+
+        case SDK_ACTIVE_SNAPSHOT:
+            obj = new UploadObject(mavenUrl: MAVEN_SNAPSHOT_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION_SNAPSHOT
+                    , artifactId: DEFAULT_ARTIFACT_ID + artifact_id_suffix + artifact_id_suffix_flavor)
+            break
+
+        case SDK_ACTIVE_LOCAL_RELEASE:
+            //默认情况下发布到本地
+            obj = new UploadObject(mavenUrl: MAVEN_LOCAL_RELEASE_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION
+                    , artifactId: DEFAULT_ARTIFACT_ID + artifact_id_suffix + artifact_id_suffix_flavor)
+            break;
+
+        case SDK_ACTIVE_LOCAL:
+        default:
+            //默认情况下发布到本地
+            obj = new UploadObject(mavenUrl: MAVEN_LOCAL_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION_SNAPSHOT
+                    , artifactId: DEFAULT_ARTIFACT_ID + artifact_id_suffix + artifact_id_suffix_flavor)
+
+    }
+    return obj
+
+}
+
+//=========================utils====================
+
+
+// region 定义数据结构,用于保存不同仓库的信息
+//=============================================
+/**
+ * 用于保存用户名密码的数据结构
+ */
+class Credential {
+    String mavenUsername
+    String mavenPassword
+}
+
+/**
+ * 配置属性的默认值
+ */
+class UploadObject {
+    String mavenUrl
+    Credential credential = new Credential(mavenUsername: "", mavenPassword: "")
+    String groupId
+    String artifactId
+    String version
+}
+
+// endregion

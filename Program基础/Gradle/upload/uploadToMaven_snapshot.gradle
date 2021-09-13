@@ -1,0 +1,112 @@
+apply plugin: 'maven-publish'
+apply plugin: "maven"
+
+publishing {
+    repositories {
+        maven {
+            url = "http://artifactory.xxx.com/artifactory/snapshot/"
+            credentials {
+                username cloudartifact_username
+                password cloudartifact_password
+            }
+        }
+    }
+
+    publications {
+        publish_debug_snapshot(MavenPublication) {
+            groupId rootProject.ext.PROJ_GROUP
+            artifactId rootProject.ext.projectnames.get(project.name)
+            version rootProject.ext.sdk_version_name + '-SNAPSHOT'
+            artifact rootProject.ext.DIR_AAR + project.name + '-debug.aar'
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    println "groupId：${it.group}"
+                    println "groupName：${it.name}"
+                    println "groupVersion：${it.version}"
+                    println "this.groupId:${groupId}"
+                    println "this.version:${version}"
+
+                    if (it.name != "unspecified") {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+            }
+        }
+
+        publish_release_snapshot(MavenPublication) {
+            groupId rootProject.ext.PROJ_GROUP
+            artifactId rootProject.ext.projectnames.get(project.name)
+            version rootProject.ext.sdk_version_name + '-release-SNAPSHOT'
+            artifact rootProject.ext.DIR_AAR + project.name + '-release.aar'
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    println "groupId：${it.group}"
+                    println "groupName：${it.name}"
+                    println "groupVersion：${it.version}"
+                    println "this.groupId:${groupId}"
+                    println "this.version:${version}"
+
+                    if (it.name != "unspecified") {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+            }
+        }
+
+        publish_coverage_snapshot(MavenPublication) {
+            groupId rootProject.ext.PROJ_GROUP
+            artifactId rootProject.ext.projectnames.get(project.name)
+            version rootProject.ext.sdk_version_name + '-coverage-SNAPSHOT'
+            artifact rootProject.ext.DIR_AAR + project.name + '-coverage.aar'
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    println "groupId：${it.group}"
+                    println "groupName：${it.name}"
+                    println "groupVersion：${it.version}"
+                    println "this.groupId:${groupId}"
+                    println "this.version:${version}"
+
+                    if (it.name != "unspecified") {
+                        //依赖maven上sdk
+                        if (it.group != "unspecified" && it.version != "unspecified") {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        } else {//依赖project场景，使用自身的版本号以及groupId
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', groupId)
+                            dependencyNode.appendNode('artifactId', rootProject.ext.projectnames.get(it.name))
+                            dependencyNode.appendNode('version', version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,162 @@
+
+apply plugin: 'maven'
+
+/**
+ * 实现目标：通过gradle命令行输入指定参数“sdkactive”进行版本发布（参数值为local、release、debug不等）
+ * 如果不指定该参数，则默认发布到local地址
+ *
+ * TODO 在根目录下使用allproject或者subproject引入该文件，则在系统“配置”环节，这个文件会被调用多次
+ */
+
+
+ext {
+    /**
+     * Maven仓库的地址、访问用户名和密码
+     */
+    MAVEN_LOCAL_URL = "D:\\Test\\repository\\local"
+    MAVEN_RELEASE_URL = "D:\\Test\\repository\\release"
+    MAVEN_SNAPSHOT_URL = "D:\\Test\\repository\\snapshot"
+    MAVEN_USERNAME = "123"
+    MAVEN_PASSWORD = "321"
+
+    /**
+     * groupId : 唯一标识（通常为模块包名，也可以任意）
+     */
+    DEFAULT_GROUP_ID = 'com.xxx.hms'
+
+    /**
+     * artifactId : 项目名称（通常为类库模块名称，也可以任意）
+     */
+    DEFAULT_ARTIFACT_ID = project.name
+
+    /**
+     * version : 版本号
+     */
+    DEFAULT_PUBLISH_VERSION = rootProject.ext.sdk_version_name
+    DEFAULT_PUBLISH_VERSION_SNAPSHOT = rootProject.ext.sdk_version_name + '-SNAPSHOT'
+
+}
+
+ext{
+    //切勿更改
+    //参数sdkactive对应的三个值：local 发布到本地版本，release 发布稳定版本，snapshot 发布抢先版（开发中的不稳定版本）
+    SDK_ACTIVE_LOCAL = 'local'
+    SDK_ACTIVE_RELEASE = 'release'
+    SDK_ACTIVE_SNAPSHOT = 'snapshot'
+    sdk_active = project.hasProperty('sdkactive') ? project.property('sdkactive') : SDK_ACTIVE_LOCAL
+}
+
+//=================Upload============================
+//发布到Maven仓库的具体代码
+uploadArchives {
+    //dependsOn表示在自己之前先执行这个方法
+    dependsOn("assemble")
+    //获取包含发布信息的对象，该对象中包含了关于发布的一系列信息
+    UploadObject uploadObject = genUploadObject(sdk_active)
+
+    repositories {
+        mavenDeployer {
+            //指定发布的maven仓库以及认证方式
+            repository(url: getUrl(uploadObject)) {
+                authentication(userName: uploadObject.credential.mavenUsername, password: uploadObject.credential.mavenPassword)
+            }
+//            当version 后缀为'-SNAPSHOT'时，会自动使用snapshotRepository
+            //TODO 为什么
+            snapshotRepository(url: getUrl(uploadObject)) {
+                authentication(userName: uploadObject.credential.mavenUsername, password: uploadObject.credential.mavenPassword)
+            }
+
+            //补充发布的相关信息
+            pom.project {
+                version uploadObject.version
+                groupId uploadObject.groupId
+                artifactId uploadObject.artifactId
+            }
+        }
+    }
+}
+
+//=========================utils====================
+//定义若干方法，辅助上面发布的业务处理
+/**
+ *
+ * 如果仓库是http接口，那么直接返回该接口的String
+ * 如果仓库是本地路径，那么需要将该地址封装成uri后再返回
+ * 当url为空时，使用根路径
+ * @return url：可能是String，也可能是uri
+ */
+private Object getUrl(UploadObject uploadObject) {
+    if (uploadObject.mavenUrl == null
+            || uploadObject.mavenUrl.isEmpty()) {
+        return project.rootDir.path
+    }
+    return uploadObject.mavenUrl.toLowerCase().startsWith("http")
+            ? uploadObject.mavenUrl : uri(uploadObject.mavenUrl)
+}
+
+
+/**
+ * 获取包含发布信息的对象。
+ * 该对象中包含了关于发布的一系列信息
+ *
+ * @param sdk_active
+ * @return
+ */
+private UploadObject genUploadObject(sdk_active) {
+    UploadObject obj;
+    switch (sdk_active) {
+
+        case SDK_ACTIVE_RELEASE:
+            obj = new UploadObject(mavenUrl: MAVEN_RELEASE_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION
+                    , artifactId: DEFAULT_ARTIFACT_ID)
+            break
+
+        case SDK_ACTIVE_SNAPSHOT:
+            obj = new UploadObject(mavenUrl: MAVEN_SNAPSHOT_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION_SNAPSHOT
+                    , artifactId: DEFAULT_ARTIFACT_ID)
+            break
+        case SDK_ACTIVE_LOCAL:
+        default:
+            //默认情况下发布到本地
+            obj = new UploadObject(mavenUrl: MAVEN_LOCAL_URL
+                    , credential: new Credential(mavenUsername: MAVEN_USERNAME, mavenPassword: MAVEN_PASSWORD)
+                    , groupId: DEFAULT_GROUP_ID
+                    , version: DEFAULT_PUBLISH_VERSION
+                    , artifactId: DEFAULT_ARTIFACT_ID)
+
+    }
+    return obj
+
+}
+
+//=========================utils====================
+
+
+// region 定义数据结构,用于保存不同仓库的信息
+//=============================================
+/**
+ * 用于保存用户名密码的数据结构
+ */
+class Credential {
+    String mavenUsername
+    String mavenPassword
+}
+
+/**
+ * 配置属性的默认值
+ */
+class UploadObject {
+    String mavenUrl
+    Credential credential = new Credential(mavenUsername: "", mavenPassword: "")
+    String groupId
+    String artifactId
+    String version
+}
+
+// endregion
