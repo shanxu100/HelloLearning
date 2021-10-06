@@ -243,8 +243,9 @@ adb shell input text xxxx
 
 -------------------
 ## 7. APK的包名
-在project中的build.gradle文件中，applicationId 字段表示的值
+在project中的build.gradle文件中，**applicationId** 字段表示的值表示app的包名。
 > https://developer.android.com/studio/build/application-id
+
 ```java
 android{
     ...
@@ -256,8 +257,9 @@ android{
 }
 ```
 注意：
-1. ```AndroidManifest.xml```文件中的package并非包名，而是指定了**各个组件（Activity，Service等）的父路径**
-2. 通过gradle修改app为任意包名，不影响最终生成的```AndroidManifest.xml```文件中各个组件的name（即全路径）
+1. ```AndroidManifest.xml```文件中的package并非包名，而是指定了**各个组件（Activity，Service等）和资源**的父路径**
+2. 如果gradle中不指定applicationId，则使用```AndroidManifest.xml```文件中的值。此时app的包名和app内各个组件的父路径同名。
+3. 通过gradle修改app为任意包名，不影响最终生成的```AndroidManifest.xml```文件中各个组件的name（即全路径）
 
 ---------------
 

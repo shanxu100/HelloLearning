@@ -2,7 +2,9 @@
 
 [TOC]
 
-- [官方文档](https://docs.gradle.org/current/userguide/userguide.html)
+- 参考：
+[官方文档](https://docs.gradle.org/current/userguide/userguide.html)
+[《Android Gradle 完整指南》](https://www.cnblogs.com/laughingQing/p/5855774.html) 
  
 - Gradle 是一个构建工具，或者理解为一个编程框架。Gradle 基于Groovy语言，Groovy 又基于Java。
   与Maven相比，**Gradle是可编程的**。

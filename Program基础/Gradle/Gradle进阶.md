@@ -17,6 +17,8 @@ dependsOn(copy_aar, zip_maven, zip_mapping)
 
 > https://blog.csdn.net/yao_94/article/details/82627582
 
+必须要都按顺序加入gradlew task2 task1执行才可以顺利执行，否则单独执行每个任务`
+
 ## preBuild——在build前先执行指定的task
 
 ```java

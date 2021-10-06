@@ -118,7 +118,9 @@ this is myFunctionCanReturn()
 ### 5、 类和接口
 - 定义：基本和Java类似
 - 同样支持class和interface，也支持 extends和implements
-- 如果不声明public/private等访问权限的话，Groovy 中 **类及其变量** 默认都是 **public** 的
+- 如果不声明public/private等访问权限的话，Groovy 中默认**所有的类和方法都是pulic的，所有类的字段都是private的**
+- groovy 的方法调用是可以没有括号的，而且也不需要分号结尾
+
 ```Java
   //类和接口
   interface IMyInterface {
@@ -148,6 +150,10 @@ this is myFunctionCanReturn()
   MyClass myClass1 = new MyClass()
   MyClass myClass2 = new MyClass(a: 1)
   ```
+#### 5.2 属性
+- 在类中声明的字段都**默认会生成对应的setter,getter方法**。所以上面的代码我们可以直接调用```instance.setA 1```
+- 可以直接通过```instance.a```这样的方式拿到字段值，但其实这**也会通过其get方法**，而且不是直接拿到这个值。
+
 #### 5.2 闭包：
   - 就是一段匿名代码块，可以接受参数和返回值。可以被当做变量，作为参数传递给方法.
   - 闭包可以类比为C++中的 “函数指针”。定义和调用过程如下所示：
