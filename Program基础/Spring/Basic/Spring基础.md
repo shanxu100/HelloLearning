@@ -1,0 +1,119 @@
+# Spring基础
+参考：
+[《spring bean是什么》](https://www.awaimai.com/2596.html)
+[《Spring Boot、Spring MVC 和 Spring 有什么区别》](https://juejin.cn/post/7024855197931274276)
+[《Servlet 到 Spring MVC 的简化之路》](https://juejin.cn/post/6844903570681135117)
+[《Nice！终于有人把SpringMVC讲明白了》](https://juejin.cn/post/6992383622342770695)
+
+## 1、什么是```Bean```
+在 Spring 中，构成应用程序主干并由Spring IoC容器管理的对象称为 Bean。Bean 是一个根据bean规范编写出来的类并由Spring IoC容器实例化、组装和管理的对象。
+
+概念简单明了，我们提取处关键的信息： 
+- bean是Java对象，一个或者多个不限定
+- bean由Spring中一个叫IoC容器的东西管理
+- Bean容器，或称Spring Ioc容器，主要用来管理对象和依赖，以及依赖的注入
+- 我们的应用程序由一个个bean构成
+- POJO泛指普通的Java对象。Bean可以简单理解为，满足特定编写规范的Java对象
+
+## 什么是```Servlet```
+ 官方解说: Servlet 是运行在 Web 服务器上的程序，它是作为来自 HTTP 客户端的请求和 HTTP 服务器上的应用程序之间的中间层。
+ Servlet 需要在Web容器中运行，并且由Web容器维护其生命周期。
+ web容器默认是采用单Servlet实例多线程的方式处理多个请求的
+
+## 2、什么是控制反转IoC
+控制反转英文全称：Inversion of Control，简称就是IoC。 控制反转通过依赖注入（DI）方式实现对象之间的松耦合关系。
+
+
+## 自动装配
+参考：
+[《初识Spring —— Bean的装配（一）》](https://juejin.cn/post/6844903618567471112)
+
+在Spring中有几种装配Bean的方式：
+
+1. 在spring-config.xml中增加配置
+```xml
+<beans>
+    ...略
+
+    <!-- 添加配置 -->
+    <context:component-scan base-package="xxx.xxx.xxx"/>
+</beans>
+```
+2. 创建 ```spring-bean.xml```
+```xml
+<beans>
+    ...略
+
+    <!-- 添加配置 -->
+    <bean id="xxx" class="xxx.xxx.xxx"/>
+</beans>
+``` 
+3. Java装配
+
+4. ```@ComponentScan```方式
+范例：[《Spring bean的装配-自动化装配》](https://juejin.cn/post/6999531046195298334)
+疑问：
+1. 同一个接口有两个实现类，Spring该如何决策
+
+
+## 常用注解
+### Bean相关
+```@Component```：修饰一个bean
+```@ComponentScan```：
+如：```@ComponentScan(basePackages = "org.helloseries.firstshow.firstshow")```
+
+```@Autowired```：自动装配
+
+```@ContextConfiguration```：
+如：```@ContextConfiguration(classes = CDPlayerConfig.class)```
+
+### 读取属性
+- 方式一：作用于整个类，为相同名称的字段赋值（该字段需要Getter和Setter）
+```@ConfigurationProperties(prefix = "custom.const")```
+
+- 方式二：作用于某一个具体的属性，单独为该属性赋值
+```@Value("${xxx.xxx.xxx}")```
+
+### 其他
+@Configuration
+
+### Controller 相关
+案例参考：[《Controller方法返回值以及部分注解的使用》](https://zhuanlan.zhihu.com/p/42790384)
+- ```@Controller```：修饰类和方法
+- ```@ResponseBody```：修饰类和方法
+- ```@RestController```：等于 @Controller + @ResponseBody
+
+### RequestMapping 相关
+- ```@RequestMapping```
+  这个注解可以作用在方法上或者是类上，用来指定请求路径
+
+- ```@PutMapping```
+
+
+
+## 处理响应
+
+### ModelAndView 
+
+### 返回String
+
+
+## Spring中的配置文件
+参考案例：[《spring配置文件》](https://www.jianshu.com/p/ab809c13c8a8)
+
+### web.xml
+1、web.xml文件是我们开发Web程序的一项很重要的配置项，里面包含了我们各种各样的配置信息，比如欢迎页面，过滤器，监听器，启动加载级别等等。
+2、在tomcat容器启动后，会寻找项目中的web.xml文件，加载其中的信息，并创建一个ServletContext上下文对象，以后再web应用中可以获得其中的值。
+
+web.xml中的加载顺序是：context-param -> listener -> filter > servlet；
+
+### applicationContext.xml
+
+### springMvc.xml
+web项目启动时，读取web.xml配置文件，首先解析的是applicationContext.xml文件，其次才是spingMvc.xml文件。
+spingMvc.xml文件中主要的工作是：启动注解、扫描controller包注解；静态资源映射；视图解析（defaultViewResolver）；文件上传（multipartResolver）;返回消息json配置。
+
+
+https://www.zhihu.com/people/alan-78-96/posts?page=3
+
+

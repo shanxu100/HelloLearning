@@ -38,9 +38,9 @@ ArrayList与LinkedList：数据结构，插入、查找和删除的效率
 6. 类加载的模型（双亲委派模型，使用组合而非继承）
 
 例题：
-- ```public static int a =1;```被赋值几次
+- ```public static int a = 1;```被赋值几次
 
-- ```public static final int a =1;```被赋值几次
+- ```public static final int a = 1;```被赋值几次
 
 7. *class文件的格式
 
@@ -265,11 +265,13 @@ HTTPS和HTTP的区别
 
 HTTPS的建立过程
 
-HTTPS不安全的地方（一定可靠么）
+HTTPS不安全的地方（一定可靠么）？如何防范中间人攻击
 
 对称加密算法：DES、3DES、ARS
 
 非对称加密算法：RSA
+
+对称和非对称加密算法的基本原理
 
 秘钥交换
 
@@ -309,7 +311,7 @@ CIA
 ## 7、Case
 
 ### 7.1 Computer
-对称与非对称加密
+- Linux IO模型
 
 ### 7.2 Android动态加载
 字节码、资源、so文件
