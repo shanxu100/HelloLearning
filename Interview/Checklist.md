@@ -249,8 +249,11 @@ RecyclerView原理
 TCP/IP五层网络模型、OSI七层网络模型
 
 ### 4.1 TCP三次握手
+标记位Flags的变化和每个阶段的名称
 
 ### 4.2 TCP四次挥手
+标记位Flags的变化和每个阶段的名称
+在TIME_WAIT阶段，为什么需要等待2MLS
 
 ### 4.3 流量控制
 

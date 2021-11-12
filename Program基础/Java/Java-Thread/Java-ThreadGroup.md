@@ -13,7 +13,7 @@ System线程组
 |   | - subgroup1
 |           |
 |           | - thread1
-|           | - thread2
+|           | - thread2`
 |   | - subgroup2
 ```
 注：
