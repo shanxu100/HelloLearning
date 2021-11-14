@@ -209,7 +209,9 @@ session.invalidate();
     </session-config>
 </web-app>
 ```
-
+注意：
+- 同一个浏览器访问webapp，使用同一个session（SessionId相同）
+- 换一个浏览器、重启浏览器或者session失效后，再次访问webapp时，会重新生成一个新的Session（和之前的SessionId不同）
 
 ## FAQ：
 
@@ -219,6 +221,13 @@ response.setHeader("refresh","2");
 ```
 
 ### 【面试】: 重定向和转发的区别
+
+
+### 【面试】Cookie和Session的区别
+
+
+### Cookies中的一个name为JSESSIONID的特属Cookie，与Session的关系
+
 
 
 
