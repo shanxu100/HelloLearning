@@ -213,6 +213,42 @@ session.invalidate();
 - 同一个浏览器访问webapp，使用同一个session（SessionId相同）
 - 换一个浏览器、重启浏览器或者session失效后，再次访问webapp时，会重新生成一个新的Session（和之前的SessionId不同）
 
+
+## Filter过滤器
+
+### 基本使用：
+类比Servlet的用法
+1. 实现```javax.servlet.Filter```类，并实现相关方法
+   1. ```init```方法：在启动web容器的时候调用
+   2. ```doFilter```方法：被过滤器拦截的请求，都会执行一次这个方法
+   3. ```destroy```方法：关闭web容器的时候调用
+2. 在```web.xml```中创建标签
+```<filter></filter>```
+```<filter-mapping></filter-mapping>```
+3. 设置标签属性
+```<url-pattern></url-pattern>``` 或 ```<servlet-name></servlet-name>```
+
+注意：在设置url-pattern时，如果使用通配符，注意通配符的意义
+
+### 原理：责任链模式
+注意类比OKHTTP的责任链模式的使用
+
+
+## Listener监听器
+### 基本使用，以 HttpSessionListener 为例
+1. 实现```HttpSessionListener```接口，```override```相关方法
+2. 在```web.xml```中创建标签
+```xml
+    <listener>
+        <listener-class>org.xxxx.MyListener</listener-class>
+    </listener>
+```
+
+## Interceptor拦截器
+
+
+
+
 ## FAQ：
 
 ### 告诉浏览器，x秒后重新请求一次（刷新）
