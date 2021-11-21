@@ -20,8 +20,28 @@
  Servlet 需要在Web容器中运行，并且由Web容器维护其生命周期。
  web容器默认是采用单Servlet实例多线程的方式处理多个请求的
 
+ ## 什么是 SSH框架 和 SSM框架
+ SSH = Structs2 + Spring + Hibernate
+ SSM = SpringMVC + Spring + Mybatis
+
+ 
+
 ## 2、什么是控制反转IoC
-控制反转英文全称：Inversion of Control，简称就是IoC。 控制反转通过依赖注入（DI）方式实现对象之间的松耦合关系。
+控制反转英文全称：Inversion of Control，简称就是IoC，是一种思想。 
+**控制**，即由谁来控制对象的创建和管理；**反转**，即由传统的程序进行控制，变成了由Spring容器进行控制。
+所以，控制反转就是由Spring容器控制Bean的创建、管理和装配，而程序本身负责接收并使用对象即可。
+实现IoC的方法有很多，依赖注入（DI）方式是其中之一
+
+
+## Bean的作用域
+参考：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-factory-scopes
+- singleton：单例模式，默认。Spring容器中只有一个对象
+- prototype：原型模式，每次从Spring容器中get时，都会返回不同的bean对象
+如：```<bean id="myBean" class="org.helloseries.spring.dao.myBean" scope="prototype"/>```
+- request
+- session
+- application
+- websocket
 
 
 ## 自动装配
@@ -30,7 +50,58 @@
 
 在Spring中有几种装配Bean的方式：
 
-1. 在spring-config.xml中增加配置
+1. XML装配：在XML中显式配置：
+创建 ```spring-bean.xml```（配置文件名字随意）
+```xml
+<beans>
+    ...略
+
+    <!-- 例1： -->
+    <!-- 添加配置  id：Bean的唯一标识；class：Bean的完整名称 -->
+    <!-- name: Bean的别名，可以同时取多个别名（空格 逗号 分好进行分割），等同于 <alias/>标签 -->
+    <bean id="xxx" class="xxx.xxx.xxx" name="myAliasName,myAliasName2"/>
+
+    <!-- 例2： -->
+    <bean id="myBean" class="org.helloseries.spring.service.MyBeanImpl">
+        <!-- ref : 赋值为Spring 容器中定义的bean对象 -->
+        <property name="dao" ref="myDao"/>
+        <!-- value : 赋值为基本数据类型 -->
+        <property name="dao" value="123"/>
+    </bean>
+
+    <!-- 为Bean指定一个别名，这样就可以通过别名进行访问 -->
+    <alias name="myBean" alias="myAliasName"/>
+</beans>
+``` 
+
+2. Java装配：在Java中显式的配置
+
+
+3. 自动装配
+
+3.1 方式一：
+
+- byName：需要保证Bean的id值唯一
+- byType：需要保证Bean的class值唯一
+
+根据名称或者类型进行匹配。这些Bean要先定义，后面Bean装配的时候才能使用
+
+```xml
+<beans>
+    ...略
+
+    <!-- 在Spring容器中查找，匹配 “Bean Id” 和 “Set方法中指定属性的名称”，然后装配给这个Bean-->
+    <bean id="xxx" class="xxx.xxx.xxx" autowire="byName"/>
+
+    <!-- 在Spring容器中查找，匹配 “Bean的类型” 和 “Set方法中指定属性的类型”，然后装配给这个Bean-->
+    <bean id="xxx" class="xxx.xxx.xxx" autowire="byType"/>
+
+
+</beans>
+``` 
+
+3.2 方式二：注解的自动装配
+
 ```xml
 <beans>
     ...略
@@ -39,21 +110,21 @@
     <context:component-scan base-package="xxx.xxx.xxx"/>
 </beans>
 ```
-2. 创建 ```spring-bean.xml```
-```xml
-<beans>
-    ...略
 
-    <!-- 添加配置 -->
-    <bean id="xxx" class="xxx.xxx.xxx"/>
-</beans>
-``` 
-3. Java装配
-
-4. ```@ComponentScan```方式
+1. ```@ComponentScan```方式
 范例：[《Spring bean的装配-自动化装配》](https://juejin.cn/post/6999531046195298334)
 疑问：
 1. 同一个接口有两个实现类，Spring该如何决策
+
+
+
+
+
+
+
+
+
+
 
 
 ## 常用注解
@@ -101,6 +172,23 @@
 ## Spring中的配置文件
 参考案例：[《spring配置文件》](https://www.jianshu.com/p/ab809c13c8a8)
 
+### Spring的配置文件<import/>标签
+作用：引入多个配置文件，合并到一个总的配置文件中
+如：
+- applicationContext.xml
+```xml
+<beans>
+    <import resource="myConfig1.xml" />
+    <import resource="myConfig2.xml" />
+    <import resource="myConfig3.xml" />
+</beans>
+```
+- myConfig1.xml
+- myConfig2.xml
+- myConfig3.xml
+
+若多个配置文件中出现相同的条目，则如何覆盖？？？
+
 ### web.xml
 1、web.xml文件是我们开发Web程序的一项很重要的配置项，里面包含了我们各种各样的配置信息，比如欢迎页面，过滤器，监听器，启动加载级别等等。
 2、在tomcat容器启动后，会寻找项目中的web.xml文件，加载其中的信息，并创建一个ServletContext上下文对象，以后再web应用中可以获得其中的值。
@@ -115,5 +203,11 @@ spingMvc.xml文件中主要的工作是：启动注解、扫描controller包注�
 
 
 https://www.zhihu.com/people/alan-78-96/posts?page=3
+
+
+
+
+## FAQ
+### Spring 中的7大模块
 
 
