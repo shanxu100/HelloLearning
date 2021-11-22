@@ -5,7 +5,9 @@
 [《Servlet 到 Spring MVC 的简化之路》](https://juejin.cn/post/6844903570681135117)
 [《Nice！终于有人把SpringMVC讲明白了》](https://juejin.cn/post/6992383622342770695)
 
-## 1、什么是```Bean```
+## 1、集合
+
+### 什么是```Bean```
 在 Spring 中，构成应用程序主干并由Spring IoC容器管理的对象称为 Bean。Bean 是一个根据bean规范编写出来的类并由Spring IoC容器实例化、组装和管理的对象。
 
 概念简单明了，我们提取处关键的信息： 
@@ -15,12 +17,22 @@
 - 我们的应用程序由一个个bean构成
 - POJO泛指普通的Java对象。Bean可以简单理解为，满足特定编写规范的Java对象
 
-## 什么是```Servlet```
+### Bean的作用域
+参考：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-factory-scopes
+- singleton：单例模式，默认。Spring容器中只有一个对象
+- prototype：原型模式，每次从Spring容器中get时，都会返回不同的bean对象
+如：```<bean id="myBean" class="org.helloseries.spring.dao.myBean" scope="prototype"/>```
+- request
+- session
+- application
+- websocket
+
+### 什么是```Servlet```
  官方解说: Servlet 是运行在 Web 服务器上的程序，它是作为来自 HTTP 客户端的请求和 HTTP 服务器上的应用程序之间的中间层。
  Servlet 需要在Web容器中运行，并且由Web容器维护其生命周期。
  web容器默认是采用单Servlet实例多线程的方式处理多个请求的
 
- ## 什么是 SSH框架 和 SSM框架
+ ### 什么是 SSH框架 和 SSM框架
  SSH = Structs2 + Spring + Hibernate
  SSM = SpringMVC + Spring + Mybatis
 
@@ -33,15 +45,7 @@
 实现IoC的方法有很多，依赖注入（DI）方式是其中之一
 
 
-## Bean的作用域
-参考：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-factory-scopes
-- singleton：单例模式，默认。Spring容器中只有一个对象
-- prototype：原型模式，每次从Spring容器中get时，都会返回不同的bean对象
-如：```<bean id="myBean" class="org.helloseries.spring.dao.myBean" scope="prototype"/>```
-- request
-- session
-- application
-- websocket
+
 
 
 ## 自动装配
@@ -50,7 +54,7 @@
 
 在Spring中有几种装配Bean的方式：
 
-1. XML装配：在XML中显式配置：
+### XML装配：在XML中显式配置：
 创建 ```spring-bean.xml```（配置文件名字随意）
 ```xml
 <beans>
@@ -74,13 +78,12 @@
 </beans>
 ``` 
 
-2. Java装配：在Java中显式的配置
+### Java装配：在Java中显式的配置
 
 
-3. 自动装配
+### 自动装配
 
-3.1 方式一：
-
+**方式一：在Bean的定义中增加`autowire`属性，并指定装配策略**
 - byName：需要保证Bean的id值唯一
 - byType：需要保证Bean的class值唯一
 
@@ -100,7 +103,61 @@
 </beans>
 ``` 
 
-3.2 方式二：注解的自动装配
+**方式二：注解的自动装配**
+Spring 2.5 开始支持
+使用须知：
+1. 导入约束
+
+2. 配置xml，开启注解的能力
+参考：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-annotation-config
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 开启注解能力的支持 -->
+    <context:annotation-config/>
+
+</beans>
+```
+
+3. 在属性上增加```@Autowired```注解
+- ```@Autowired```注解可以应用在类中的属性上，
+- ```@Autowired```注解可以应用在属性的Setter方法上
+- 被```@Autowired```修饰的属性可以不配置Getter和Setter方法，即使该属性是private的（使用反射实现的）
+- 被```@Autowired```修饰的属性，Spring容器在自动注入的时候，根据 byType 和 byName 结合来寻找的
+
+4. 扩展
+- 与```@Qualifier()```组合，可以手动的显式指定自动装配的Bean，如：
+```java
+    @Autowired
+    @Qualifier(value = "myBeanId")
+    private IMyDao dao;
+```
+- ```@Resource```注解可以代替```@Autowired```注解，实现自动注入
+- ```@Resource(value = "xxx")```注解可以代替```@Autowired``` + ```@Qualifier()```注解，实现自动注入
+如：
+```java
+    @Resource(name = "myBeanId")
+    private IMyDao dao;
+```
+
+- ```@Nullable``` 被注解的元素可以为null 
+- ```@NonNull``` 被注解的元素不能为null
+- ```@Autowired(required = false)```中required参数的意义
+
+
+
+
+
+
+
+
 
 ```xml
 <beans>
@@ -211,3 +268,4 @@ https://www.zhihu.com/people/alan-78-96/posts?page=3
 ### Spring 中的7大模块
 
 
+### 【面试】@Resource 和 @Autowired 注解的区别
