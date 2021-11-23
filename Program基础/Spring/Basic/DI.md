@@ -2,14 +2,15 @@
 
 依赖，即Bean的创建和管理依赖于Spring容器；注入，即由Spring容器来注入Bean中的所有属性
 
-1. 构造器注入
+### 1、构造器注入
 > 参考：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-constructor-injection
 
 在`<bean/>`标签中配置子标签`<constructor-arg/>`标签，可调用有参构造函数创建Bean
 - 如匹配下标、类型或者参数名称等方式，指定构造函数的参数值
 
 
-2. set注入
+### 2、 set注入
+#### 2.1 使用配置XML的方式
 在`<bean/>`标签中配置子标签`<property/>`，可以为Bean中的属性字段赋值，即**调用对应属性字段的Set方法**
 
 针对不同的数据结构，可以配置不同的标签。
@@ -97,8 +98,41 @@ System.out.println(myBean.getDao().getName());
 - Spring启动时，XML配置文件中指定的所有Bean就被创建了
 - Spring容器默认使用无参构造函数创建Bean
 
+#### 2.2 使用注解的方式
 
-3. 拓展方式注入
+1. 开启扫描包  
+
+    方式一：在xml中开启扫描  
+    ```xml
+    <beans>
+        ...略
+        <!-- 添加配置：指定扫描的包的路径 -->
+        <context:component-scan base-package="xxx.xxx.xxx"/>
+    </beans>
+    ```
+    方式二：  
+    使用```@ComponentScan```注解：  
+    如：
+    ```java
+    @ComponentScan(basePackages = "org.helloseries.firstshow.firstshow")
+    ```    
+
+2. 注册Bean
+```@Component```：修饰一个类，表示将当前类定义为一个bean，由Spring容器进行管理。  
+按照Spring MVC 的架构，可以对```@Component```进行衍生：
+Controller层：使用`@Controller`
+Service层：使用`@Service`
+Dao层：使用`@Repository`  
+
+3. 设置作用域
+```@Scope("singleton")```；和`@Component`注解一起使用，可以设置Bean的作用域  
+
+4. 属性注入
+`@Value("xxx")`：修饰一个**String类型的属性**或者**该属性的Setter方法**，表示为该属性赋值
+该注解的作用相当于`<bean/>`标签中的`<property/>`子标签
+
+
+### 3、拓展方式注入
 
 `p`命令名空间：简化Set注入的```<property/>```标签。
 参考：https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-p-namespace
