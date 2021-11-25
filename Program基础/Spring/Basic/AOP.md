@@ -1,4 +1,25 @@
 
+1. 定义主要增加的逻辑
+```java
+@Component
+public class Log implements MethodBeforeAdvice, AfterReturningAdvice {
+
+    @Override
+    public void before(Method method, Object[] args, Object target) throws Throwable {
+        System.out.println("this is BEFORE...method name is " + method.getName());
+    }
+
+    @Override
+    public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
+        System.out.println("this is afterReturning ...method name is " + method.getName());
+        System.out.println("this is afterReturning ...returnValue is " + returnValue);
+
+    }
+}
+```
+
+2. 配置切面
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
