@@ -45,6 +45,7 @@
 所以，控制反转就是由Spring容器控制Bean的创建、管理和装配，而程序本身负责接收并使用对象即可。
 实现IoC的方法有很多，依赖注入（DI）方式是其中之一
 
+## 什么是AOP
 
 
 
@@ -187,7 +188,7 @@ Spring 2.5 开始支持。
         System.out.println(myService.getMyDao().getName());
    ```
 
-5. 使用@Import(xxx.class)可以引入其他的配置文件
+5. 使用`@Import(xxx.class)`注解可以引入其他的配置文件
    类比xml配置中的```<import/>```标签
 
 

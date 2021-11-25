@@ -11,6 +11,17 @@
 ## 2、动态代理：通过反射来动态的创建代理对象
 > https://segmentfault.com/a/1190000016728200
 > https://juejin.im/post/5c1ca8df6fb9a049b347f55c
+
+由于“静态代理模式下的代理类需要手动创建”存在弊端，动态代理模式的核心思想就是“自动的（或者动态的）生成一个代理类”
+
+- JDK动态代理 —— 基于接口的
+- CGLIB动态代理 —— 基于类的
+- Javassist —— 基于Java字节码的：通过修改Java字节码来实现动态代理
+
+优点：
+
+
+
 ### 2.1 JDK动态代理
 1. 定义接口并实现
 ```java
@@ -47,7 +58,10 @@ public class CookManager implements ICook, IEat {
 
 ```
 
-2. 实现 InvocationHandler 接口，确定代理类的逻辑
+2. 实现 ```InvocationHandler``` 接口，确定代理类的逻辑。  
+当每次调用代理类的方法时，都会回调这个handler的`invoke`方法。所以，开发者可以在这个handler的回调中识别出代理类的哪个接口被调用了。  
+然后开发者可以任意扩展“被代理类方法”的前后业务逻辑。
+
 ```java
 class DynamicProxyHandler implements InvocationHandler {
 
@@ -78,7 +92,7 @@ class DynamicProxyHandler implements InvocationHandler {
 }
 ```
 
-3. 创建代理类并调用
+1. 创建代理类并调用
 ```java
 // 被代理的对象 target
 CookManager target = new CookManager();
