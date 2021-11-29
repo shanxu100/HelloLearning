@@ -27,11 +27,20 @@
 - 方法执行完毕后，web容器将response发送给客户端
 
 ## ```web.xml```文件
+
+
+
 ### 标签
 
-`<servlet></servlet>`标签
+#### 欢迎页标签
+```xml
+<welcome-file-list>
+    <!-- 可以指定为自己的欢迎页 -->
+    <welcome-file>index.jsp</welcome-file>
+</welcome-file-list>
+```
 
-`<servlet-mapping></servlet-mapping>`标签
+#### `<servlet/>`和`<servlet-mapping>`标签
 
 - 一个`<servlet/>`标签可以经过多个`<servlet-mapping/>`标签进行映射
 
@@ -201,6 +210,9 @@ session.invalidate();
 ```
 ```xml
 <web-app>
+
+    <!-- 其他...略 -->
+
     <session-config>
         <!-- 设置超时时间（单位：min） -->
         <!-- 1. 如果小于等于0，表示永远不会超时 -->
