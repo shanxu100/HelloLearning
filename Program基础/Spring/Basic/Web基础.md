@@ -277,5 +277,7 @@ response.setHeader("refresh","2");
 ### Cookies中的一个name为JSESSIONID的特属Cookie，与Session的关系
 
 
+### Web服务器和Web容器的区别
+
 
 
