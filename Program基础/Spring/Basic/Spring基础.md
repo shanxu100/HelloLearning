@@ -232,7 +232,22 @@ Spring 2.5 开始支持。
 
 ## 处理响应
 
-### ModelAndView 
+### 返回ModelAndView 
+使用```@Controller```修饰的类，如
+```java
+@Controller
+public class TestController {
+
+    @RequestMapping("/test")
+    public String getTest(Model model) {
+        // 该方法的参数可以很灵活，详见requestMapping的用法
+        model.addAttribute("msg","hfllgslgj");
+        // 返回一个视图名称
+        return "testPage";
+    }
+}
+```
+
 
 ### 返回String
 

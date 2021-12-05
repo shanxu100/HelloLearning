@@ -6,7 +6,7 @@
 - webapps   // Tomcat服务器的web目录（可以存放多个web项目）
     - Root
     - FirstWeb  // 网站的目录名，也是不同web项目的目录
-        - WEB_INF
+        - WEB-INF
             - classes   // 本项目Java编译的产物，以及resources中的配置文件
             - lib       // Web应用所依赖的jar包，比如pom中依赖的第三方的sdk
             - web.xml   // Web配置文件
@@ -17,6 +17,8 @@
             - img
     - ...   // 其他目录
 ```
+
+
 
 ## JavaWeb项目目录结构
 
@@ -279,5 +281,5 @@ response.setHeader("refresh","2");
 
 ### Web服务器和Web容器的区别
 
-
+### 资源放置到`WEB-INF`文件夹中和不放在这个文件夹中有什么去区别
 

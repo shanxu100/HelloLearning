@@ -43,6 +43,9 @@ first()和last()操作，分别是返回集合中第一个元素（最小）和�
 保存了插入顺序的Map。Map中的Entry除了保存当前对象的引用外，还保存了其上一个元素before和下一个元素after的引用
 ```accessOrder```参数： true：访问顺序；false：插入顺序（默认）
 
+访问顺序：？？？？
+每次调用get()方法，就会将更改访问的元素更新到链表头部（LRU算法）
+
 #### HashTable：
 线程安全的，key和value都不允许为null
 

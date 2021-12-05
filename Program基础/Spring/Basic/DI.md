@@ -119,7 +119,7 @@ System.out.println(myBean.getDao().getName());
 
 2. 注册Bean
 ```@Component```：修饰一个类，表示将当前类定义为一个bean，由Spring容器进行管理。  
-按照Spring MVC 的架构，可以对```@Component```进行衍生：
+按照Spring MVC 的架构，可以对```@Component```进行**衍生**：
 Controller层：使用`@Controller`
 Service层：使用`@Service`
 Dao层：使用`@Repository`  
