@@ -48,6 +48,9 @@
 ## 什么是AOP
 
 
+### 什么是Restful
+Restful是一种资源定位及资源操作的一种风格，不是一种协议。使用Restful风格进行开发，可以使系统更加简洁、更加有层次
+优点：简洁、高效、安全
 
 
 ## 2、Bean的装配装配
@@ -223,10 +226,44 @@ Spring 2.5 开始支持。
 - ```@RestController```：等于 @Controller + @ResponseBody
 
 ### RequestMapping 相关
-- ```@RequestMapping```
-  这个注解可以作用在方法上或者是类上，用来指定请求路径
+```@RequestMapping```这个注解可以作用在方法上或者是类上，用来指定请求路径
+- `value` 或 `path` ：添加子路径
+- `method` ： 规定Http的请求方法
+- 衍生：`@GetMapping` `@PostMapping` `@DeleteMapping` `@PutMapping`... = `@RequestMapping` + `method`属性
 
-- ```@PutMapping```
+### 被```@RequestMapping```修饰的方法的参数
+**情况一：自动匹配**
+- Http GET方法+方法参数是基本数据类型：方法参数名 = Http请求中的参数名
+- Http GET方法+方法参数是一个对象：Http请求中的参数名将自动匹配该对象的属性名
+- ```HttpServletRequest``` 和`` HttpServletResponse`` 等特殊的对象
+- ```Model```、```ModelMap```和```ModelAndView```等特殊的对象
+
+
+**情况二：手动绑定**
+- 使用`@RequestParam(xxx)`绑定方法参数名 与 Http请求中的参数名
+
+
+### 被```@RequestMapping```修饰的方法的返回值
+**情况一：返回String**
+1. 请求转发
+- 无需配置视图解析器，否则会自动拼接
+如：```return "/WEB-INF/jsp/testPage.jsp";``` 
+或者 ```return "forward:/WEB-INF/jsp/testPage.jsp";```
+
+2. 重定向
+- 无需配置视图解析器，否则会自动拼接
+如：```return "redirect:xxxx.jsp";```
+
+3. 普通视图名
+- 先配置视图解析器
+- ```return "testPage";```
+
+**情况二：返回```ModelAndView```**
+可以同时控制数据与视图
+
+
+**情况三：无返回值**
+
 
 
 

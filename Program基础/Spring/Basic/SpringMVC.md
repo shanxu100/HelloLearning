@@ -99,3 +99,6 @@ SpringMVC核心组件，主要步骤为：
 </beans>
 ```
 
+### FAQ:
+HTTP Post请求时，增加参数
+

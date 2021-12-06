@@ -244,6 +244,24 @@ session.invalidate();
 
 注意：在设置url-pattern时，如果使用通配符，注意通配符的意义
 
+例：乱码时，增加Spring的字符过滤器
+```xml
+    <!--    配置 spring mvc的字符过滤器，解决乱码-->
+    <filter>
+        <filter-name>encoding-filter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>utf-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <!--  注意此时通配符使用 /*      -->
+        <filter-name>encoding-filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+```
+
 ### 原理：责任链模式
 注意类比OKHTTP的责任链模式的使用
 
