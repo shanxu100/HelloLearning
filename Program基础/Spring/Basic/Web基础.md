@@ -1,6 +1,6 @@
-# Web基础
+## Web基础
 
-## Web基本目录结构（以部署到Tomcat为例）
+### 1、Web基本目录结构（以部署到Tomcat为例）
 
 ```java
 - webapps   // Tomcat服务器的web目录（可以存放多个web项目）
@@ -17,24 +17,23 @@
             - img
     - ...   // 其他目录
 ```
+```web.xml```文件（重要）:  
+略...
 
+JavaWeb项目目录结构：  
+略...
 
-
-## JavaWeb项目目录结构
-
-## Servlet原理
+### 2、Servlet原理
 - Web容器调用实现Servlet接口的类的server方法，将request和response传入进来。
 - HttpServlet根据Request的Method，分别传递给doPost和doGet等方法执行
 - 继承HttpServlet类的自定义类，override其中的方法，可以获取request信息，并修改response数据
 - 方法执行完毕后，web容器将response发送给客户端
 
-## ```web.xml```文件
 
 
+### 3、标签
 
-### 标签
-
-#### 欢迎页标签
+#### 3.1 欢迎页标签
 ```xml
 <welcome-file-list>
     <!-- 可以指定为自己的欢迎页 -->
@@ -42,12 +41,18 @@
 </welcome-file-list>
 ```
 
-#### `<servlet/>`和`<servlet-mapping>`标签
+#### 3.2 `<servlet/>`和`<servlet-mapping>`标签
 
-- 一个`<servlet/>`标签可以经过多个`<servlet-mapping/>`标签进行映射
+一个`<servlet/>`标签可以经过多个`<servlet-mapping/>`标签进行映射
 
+**正确使用通配符**
+通配符的优先级：
+- 有固定路径的优先
+- 若无匹配的，则走默认的
 
-### 使用通配符
+具体使用，见下面几个例子：
+
+- 基本使用：
 ```xml
     <servlet-mapping>
         <servlet-name>first-servlet</servlet-name>
@@ -75,12 +80,7 @@ http://localhost:8080/m01/test/xxxxx/xxx
     </servlet-mapping>
 ```
 
-通配符的优先级：
-- 有固定路径的优先
-- 若无匹配的，则走默认的
-
-### 特殊的例子
-- 设置默认的请求路径，原默认的```index.jsp```将不再起作用
+- **特殊的例子：** 设置默认的请求路径，原默认的```index.jsp```将不再起作用
 ```xml
     <servlet-mapping>
         <servlet-name>first-servlet</servlet-name>
@@ -88,7 +88,7 @@ http://localhost:8080/m01/test/xxxxx/xxx
     </servlet-mapping>
 ```
 
-## ServletContext的应用
+### 4、ServletContext的应用
 一个Web app只有一个ServletContext对象，即这个对象是多个Servlet之间共享的。常用的使用场景如下：
 
 - 获取 ServletContext对象
@@ -121,7 +121,7 @@ servletContext.getInitParameter("myParam");
 // /second-servlet 为需要转发的新的路径
 servletContext.getRequestDispatcher("/second-servlet").forward(request,response);
 ```
-**路径问题：**  
+#### 4.1 路径问题：  
 必须以`/`开头，表示从**当前webapp的根路径**进行请求转发  
 
 - 读取配置属性
@@ -147,8 +147,8 @@ properties.load(in);
 String user = (String) properties.get("username");
 ```
 
-## HttpServletResponse
-### 重定向
+### 5、HttpServletResponse
+#### 5.1 重定向
 ```java
 // 注意重定向路径
 response.sendRedirect("/f1/second-servlet");
@@ -163,7 +163,7 @@ response.setHeader("Location","设置的路径");
 response.setStatus(302);
 ```
 
-## HttpServletRequest
+### 6、HttpServletRequest
 - 获取本webApp的上下文路径
 ```java
 request.getContextPath()
@@ -178,7 +178,7 @@ request.getRequestDispatcher("/second-servlet").forward(request,response);
 
 - 获取请求参数
 
-## Cookies
+### 7、Cookies
 ```java
 // 获取request中的所有cookie
 Cookie[] cookies = request.getCookies();
@@ -192,13 +192,13 @@ Student student = new Student("Zero", 8);
 Cookie myCookie = new Cookie("MyCookName",student.toString());
 response.addCookie(myCookie);
 ```
-### 字符问题：
+#### 7.1 字符问题：
 在Cookie中，某些特殊的字符，例如：空格，方括号，圆括号，等于号（=），逗号，双引号，斜杠，问号，@符号，冒号，分号都不能作为Cookie的内容。
 所以，
 - 在添加cookie的时候，可以将value字段通过```URLEncoder.encode(msg,"utf-8");```进行编码
 - 在获取cookie的时候，可以将value字段通过```URLDecoder.decode()(msg,"utf-8");```进行解码
 
-## Session
+### 8、Session
 ```java
 // 获取session对象
 HttpSession session = request.getSession();
@@ -228,9 +228,9 @@ session.invalidate();
 - 换一个浏览器、重启浏览器或者session失效后，再次访问webapp时，会重新生成一个新的Session（和之前的SessionId不同）
 
 
-## Filter过滤器
+### 9、Filter过滤器
 
-### 基本使用：
+#### 9.1 基本使用：
 类比Servlet的用法
 1. 实现```javax.servlet.Filter```类，并实现相关方法
    1. ```init```方法：在启动web容器的时候调用
@@ -262,12 +262,12 @@ session.invalidate();
     </filter-mapping>
 ```
 
-### 原理：责任链模式
+#### 9.2 原理：责任链模式
 注意类比OKHTTP的责任链模式的使用
 
 
-## Listener监听器
-### 基本使用，以 HttpSessionListener 为例
+### 10、Listener监听器
+#### 10.1 基本使用，以 HttpSessionListener 为例
 1. 实现```HttpSessionListener```接口，```override```相关方法
 2. 在```web.xml```中创建标签
 ```xml
@@ -276,12 +276,12 @@ session.invalidate();
     </listener>
 ```
 
-## Interceptor拦截器
+### 11、Interceptor拦截器
 
 
 
 
-## FAQ：
+## 12、FAQ：
 
 ### 告诉浏览器，x秒后重新请求一次（刷新）
 ```java

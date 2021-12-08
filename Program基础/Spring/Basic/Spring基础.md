@@ -53,7 +53,7 @@ Restful是一种资源定位及资源操作的一种风格，不是一种协议�
 优点：简洁、高效、安全
 
 
-## 2、Bean的装配装配
+## 2、Bean的装配
 参考：
 [《初识Spring —— Bean的装配（一）》](https://juejin.cn/post/6844903618567471112)
 
@@ -194,82 +194,9 @@ Spring 2.5 开始支持。
 5. 使用`@Import(xxx.class)`注解可以引入其他的配置文件
    类比xml配置中的```<import/>```标签
 
+## 3、处理响应
 
-
-
-
-
-
-## 常用注解
-
-
-
-
-
-```@ContextConfiguration```：  
-如：```@ContextConfiguration(classes = CDPlayerConfig.class)```
-
-### 读取属性
-- 方式一：作用于整个类，为相同名称的字段赋值（该字段需要Getter和Setter）
-```@ConfigurationProperties(prefix = "custom.const")```
-
-- 方式二：作用于某一个具体的属性，单独为该属性赋值
-```@Value("${xxx.xxx.xxx}")```
-
-### 其他
-@Configuration
-
-### Controller 相关
-案例参考：[《Controller方法返回值以及部分注解的使用》](https://zhuanlan.zhihu.com/p/42790384)
-- ```@Controller```：修饰类和方法
-- ```@ResponseBody```：修饰类和方法
-- ```@RestController```：等于 @Controller + @ResponseBody
-
-### RequestMapping 相关
-```@RequestMapping```这个注解可以作用在方法上或者是类上，用来指定请求路径
-- `value` 或 `path` ：添加子路径
-- `method` ： 规定Http的请求方法
-- 衍生：`@GetMapping` `@PostMapping` `@DeleteMapping` `@PutMapping`... = `@RequestMapping` + `method`属性
-
-### 被```@RequestMapping```修饰的方法的参数
-**情况一：自动匹配**
-- Http GET方法+方法参数是基本数据类型：方法参数名 = Http请求中的参数名
-- Http GET方法+方法参数是一个对象：Http请求中的参数名将自动匹配该对象的属性名
-- ```HttpServletRequest``` 和`` HttpServletResponse`` 等特殊的对象
-- ```Model```、```ModelMap```和```ModelAndView```等特殊的对象
-
-
-**情况二：手动绑定**
-- 使用`@RequestParam(xxx)`绑定方法参数名 与 Http请求中的参数名
-
-
-### 被```@RequestMapping```修饰的方法的返回值
-**情况一：返回String**
-1. 请求转发
-- 无需配置视图解析器，否则会自动拼接
-如：```return "/WEB-INF/jsp/testPage.jsp";``` 
-或者 ```return "forward:/WEB-INF/jsp/testPage.jsp";```
-
-2. 重定向
-- 无需配置视图解析器，否则会自动拼接
-如：```return "redirect:xxxx.jsp";```
-
-3. 普通视图名
-- 先配置视图解析器
-- ```return "testPage";```
-
-**情况二：返回```ModelAndView```**
-可以同时控制数据与视图
-
-
-**情况三：无返回值**
-
-
-
-
-## 处理响应
-
-### 返回ModelAndView 
+### 3.1 返回ModelAndView 
 使用```@Controller```修饰的类，如
 ```java
 @Controller
@@ -286,13 +213,13 @@ public class TestController {
 ```
 
 
-### 返回String
+### 3.2 返回String
 
 
-## Spring中的配置文件
+## 4、Spring中的配置文件
 参考案例：[《spring配置文件》](https://www.jianshu.com/p/ab809c13c8a8)
 
-### Spring的配置文件<import/>标签
+### 4.1 Spring的配置文件<import/>标签
 作用：引入多个配置文件，合并到一个总的配置文件中
 如：
 - applicationContext.xml
@@ -309,17 +236,82 @@ public class TestController {
 
 若多个配置文件中出现相同的条目，则如何覆盖？？？
 
-### web.xml
-1、web.xml文件是我们开发Web程序的一项很重要的配置项，里面包含了我们各种各样的配置信息，比如欢迎页面，过滤器，监听器，启动加载级别等等。
-2、在tomcat容器启动后，会寻找项目中的web.xml文件，加载其中的信息，并创建一个ServletContext上下文对象，以后再web应用中可以获得其中的值。
+### 4.2 web.xml
+1. web.xml文件是我们开发Web程序的一项很重要的配置项，里面包含了我们各种各样的配置信息，比如欢迎页面，过滤器，监听器，启动加载级别等等。
+2. 在tomcat容器启动后，会寻找项目中的web.xml文件，加载其中的信息，并创建一个ServletContext上下文对象，以后再web应用中可以获得其中的值。
+3. 在web.xml文件中配置`<servlet/>`和`<servlet-mapping/>`标签，可以指定spring mvc的配置文件（如下面的4.4小节的文件）
 
-web.xml中的加载顺序是：context-param -> listener -> filter > servlet；
+web.xml中的加载顺序是：`context-param -> listener -> filter > servlet`
 
-### applicationContext.xml
+### 4.3 applicationContext.xml
+约定的文件名？？？
 
-### springMvc.xml
+### 4.4 springMvc.xml
 web项目启动时，读取web.xml配置文件，首先解析的是applicationContext.xml文件，其次才是spingMvc.xml文件。
 spingMvc.xml文件中主要的工作是：启动注解、扫描controller包注解；静态资源映射；视图解析（defaultViewResolver）；文件上传（multipartResolver）;返回消息json配置。
+
+
+
+## 常用注解
+
+### ```@Configuration```和```@ContextConfiguration```相关：  
+如：```@ContextConfiguration(classes = CDPlayerConfig.class)```
+
+读取属性的方法
+- 方式一：作用于整个类，为相同名称的字段赋值（该字段需要Getter和Setter）
+```@ConfigurationProperties(prefix = "custom.const")```
+
+- 方式二：作用于某一个具体的属性，单独为该属性赋值
+```@Value("${xxx.xxx.xxx}")```
+
+
+### Controller 相关
+案例参考：[《Controller方法返回值以及部分注解的使用》](https://zhuanlan.zhihu.com/p/42790384)
+- ```@Controller```：修饰类和方法
+- ```@ResponseBody```：修饰类和方法
+- ```@RestController```：等于 @Controller + @ResponseBody
+
+### RequestMapping 相关
+```@RequestMapping```这个注解可以作用在方法上或者是类上，用来指定请求路径
+- `value` 或 `path` ：添加子路径
+- `method` ： 规定Http的请求方法
+- 衍生：`@GetMapping` `@PostMapping` `@DeleteMapping` `@PutMapping`... = `@RequestMapping` + `method`属性
+
+#### 被```@RequestMapping```修饰的方法的参数
+**情况一：自动匹配**
+- Http GET方法+方法参数是基本数据类型：方法参数名 = Http请求中的参数名
+- Http GET方法+方法参数是一个对象：Http请求中的参数名将自动匹配该对象的属性名
+- ```HttpServletRequest``` 和`` HttpServletResponse`` 等特殊的对象
+- ```Model```、```ModelMap```和```ModelAndView```等特殊的对象
+
+**情况二：手动绑定**
+- 使用`@RequestParam(xxx)`绑定方法参数名 与 Http请求中的参数名
+
+
+#### 被```@RequestMapping```修饰的方法的返回值
+**情况一：返回String**
+1. 请求转发
+- 无需配置视图解析器，否则会自动拼接
+如：```return "/WEB-INF/jsp/testPage.jsp";``` 
+或者 ```return "forward:/WEB-INF/jsp/testPage.jsp";```
+2. 重定向
+- 无需配置视图解析器，否则会自动拼接
+如：```return "redirect:xxxx.jsp";```
+3. 普通视图名
+- 先配置视图解析器
+- ```return "testPage";```
+
+**情况二：返回```ModelAndView```**
+可以同时控制数据与视图
+
+**情况三：无返回值**
+
+
+
+
+
+
+
 
 
 https://www.zhihu.com/people/alan-78-96/posts?page=3
