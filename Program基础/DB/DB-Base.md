@@ -54,3 +54,106 @@ https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msv
 
 ### 2、Basic
 #### 2.1 什么是关系型数据库和非关系型数据库
+
+
+
+### 3、常用sql命令
+```sql
+
+-- 列出所有数据库
+show databases;
+
+-- 创建数据库
+-- create database DBName
+CREATE DATABASE `school` CHARACTER SET utf8 COLLATE utf8_general_ci;
+create database if not exists school
+
+-- 删除数据库
+-- drop DBName
+drop database school
+drop database if exists school
+
+-- 指定当前数据库(切换数据库)
+--use databaseName
+use school;
+
+-- 列出当前数据库的所有表
+show tables;
+
+-- 查询某个表的所有信息
+-- describe tableName
+describe student;
+
+-- 退出链接
+exit;
+
+```
+
+
+### 4、数据库的列类型
+#### 4.1 数值
+| 类型 | 占用空间 | 描述 |
+|  --  |  --  |  --  |
+tinyint     | 1个字节   | 十分小的整数
+smallint    | 2个字节   | 较小的整数
+smediumint  | 3个字节   | 中等小的整数
+int         | 4个字节   | 一般的整数
+bigint      | 8个字节   | 较大的整数
+float       | 4个字节   | 浮点数
+double      | 8个字节   | 浮点数
+decimal     |字符串形式的浮点数（适用于金融）
+
+#### 4.2 字符串
+| 类型 | 占用空间 | 描述 |
+|  --  |  --  |  --  |
+char     | 0-255     | 固定大小的字符串 
+varchar  | 0-65535   | 可变字符串
+tinytext | 0-2^8-1     | 微型文本，适用于博客等文章
+text     | 0-2^16-1    | 适用于大文本
+
+#### 4.3 日期与时间
+| 类型 | 描述 |
+|  --  |  --  |
+data        | 日期，YYYY-MM-DD
+time        | 时间，HH:mm:ss
+year        | 年份
+datatime    | YYYY-MM-DD HH:mm:ss，最常用
+timestamp   | 时间戳，毫秒
+
+#### 4.4 null
+- 没有值，未知
+- 不要使用null进行运算，如果强行使用，结果还是为null
+
+
+### 5、数据库的字段属性（重点）
+1. `unsigned`
+  - 表示无符号整数
+  - 不能为负数
+2. `zerofill`
+   - 0填充：不足的为数，使用0来填充
+3. 自增
+   - 自增，同行来设置唯一的主键index
+   - 可以设置自增初始值以及自增步长
+4. 空/非空 `NULL` / `NOT NULL`
+   - `NOT NULL`: 如果该字段没有值，则报错
+   - `NULL`： 如果该字段没有值，则自动填充`NULL`
+5. default
+   - 设置默认的值。即如果该字段没有值，则自动填充默认值
+
+
+### 6、FAQ
+#### 6.1 tips
+1. mysql关键字不区分大小写
+
+
+#### 6.2 数据库中每张表中必须存在的几个字段
+| 字段名称 | 描述 |
+| -- | -- |
+id          | 主键
+version     | 乐观锁
+is_delete   | 伪删除，1表示这个记录已经在业务上被删除，但实际依然存在数据库中
+gmt_create  | 创建时间
+gmt_update  | 修改时间
+
+
+
