@@ -169,6 +169,24 @@ InnoDB：安全性高，支持事务的处理，支持多表多用户操作
   -  `*.MYD` 数据文件
   -  `*.MYI` 索引文件
 
+### 6、外键Foreign Key
+#### 6.1 创建外键
+- 在创建数据表的时候指定外键
+
+- 对于已经创建的表，可以再添加外键约束
+```sql
+-- ALTER TABLE `表名` ADD CONSTRAINT `约束名` FOREIGN KEY(`作为外键的字段`) REFERENCES `被引用的表`(`作为外键的字段`)
+ALTER TABLE `Students` 
+ADD CONSTRAINT `FK_gradeid` FOREIGN KEY(`gradeid`) REFERENCES `Grade`(`gradeid`)
+```
+
+#### 6.2 删除外键
+`Table A` 中的一列 **引用reference** `Table B`中的字段  
+删除时，应该先删除 `Table A`，才能删除`Table B`；而不能直接删除`Table B`。
+
+
+
+
 ### 6、FAQ
 #### 6.1 tips
 1. mysql关键字不区分大小写
@@ -185,7 +203,7 @@ character-set-server=utf8
 ```
 
 
-#### 6.2 数据库中每张表中必须存在的几个字段
+#### 6.2 在实际应用中，数据库中每张表中经常存在的几个字段
 | 字段名称 | 描述 |
 | -- | -- |
 id          | 主键

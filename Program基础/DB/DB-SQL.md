@@ -17,7 +17,7 @@ show create database `DBName`
 #### 2.1 创建一张数据表
 ```sql
 -- 创建
-CREATE TABLE `students` (
+CREATE TABLE `Students` (
   `id` int(4) NOT NULL AUTO_INCREMENT COMMENT 'id hao',
   `name` varchar(50) NOT NULL DEFAULT '匿名' COMMENT 'xing ming',
   `pwd` varchar(50) NOT NULL DEFAULT '123456' COMMENT 'mi ma',
@@ -36,26 +36,26 @@ show create table `tableName`
 #### 2.3 修改一张表
 ```sql
 -- 修改表的名称
-ALTER TABLE `students` RENAME AS `student`
+ALTER TABLE `Students` RENAME AS `student`
 
 -- 增加表的字段
-ALTER TABLE `students` ADD `addition` VARCHAR(50) NOT NULL DEFAULT 'my addition'
+ALTER TABLE `Students` ADD `addition` VARCHAR(50) NOT NULL DEFAULT 'my addition'
 
 -- 修改表的字段
 -- 将 addition 列，由 VARCHAR 修改为 INT
-ALTER TABLE `students` MODIFY `addition` INT(10)
+ALTER TABLE `Students` MODIFY `addition` INT(10)
 -- 将 addition 列重命名
-ALTER TABLE `students` CHANGE `addition` `addition1` VARCHAR(50)
+ALTER TABLE `Students` CHANGE `addition` `addition1` VARCHAR(50)
 
 -- 删除表的字段
-ALTER TABLE `students` DROP `addition`
+ALTER TABLE `Students` DROP `addition`
 
 ```
 
 #### 2.4 删除一个表
 ```sql
 -- 删除一张表
-DROP TABLE IF EXISTS `students` 
+DROP TABLE IF EXISTS `Students` 
 ```
 
 
@@ -67,7 +67,8 @@ DROP TABLE IF EXISTS `students`
 重命名一个表的字段
 不能修改约束和类型？？？？存疑，经过验证是可以的
 
-
+### 3、DML语言
+增、删、改
 
 
 
