@@ -132,7 +132,8 @@ timestamp   | 时间戳，毫秒
 2. `zerofill`
    - 0填充：不足的为数，使用0来填充
 3. 自增`auto_increment`
-   - 自增，同行来设置唯一的主键index
+   - 一张表只能有一列是自增的，且只能修饰主键
+   - there can be only one auto column and it must be defined as a key
    - 可以设置自增初始值以及自增步长
 4. 空/非空 `NULL` / `NOT NULL`
    - `NOT NULL`: 如果该字段没有值，则报错

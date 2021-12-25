@@ -58,8 +58,7 @@ ALTER TABLE `Students` DROP `addition`
 DROP TABLE IF EXISTS `Students` 
 ```
 
-
-#### 2.4 在修改表的过程中， MODIFY 和 CHANGE 的区别是啥
+#### 2.5 在修改表的过程中， MODIFY 和 CHANGE 的区别是啥
 - MODIFY
 可以修改表的字段的约束和类型，不能重命名
 
@@ -70,6 +69,81 @@ DROP TABLE IF EXISTS `Students`
 ### 3、DML语言
 增、删、改
 
+#### 3.1 插入
+insert
+```sql
+-- 插入一行或者多行，每个字段都赋值
+-- 此时，value中的值需要与表中的字段一一匹配
+INSERT INTO `students` VALUES 
+(2,'gsx1','123456',8,'ggggg'),
+(4,'gsx2','123456',8,'ggggg')
+
+-- 插入一行或者多行，每个字段都赋值
+-- 自增的列若未指定，则自增
+INSERT INTO `students`(`name`,`pwd`,`age`) VALUES 
+('gsx1','123456',8),
+('gsx2','123456',8)
+
+```
+
+
+#### 3.2 更新
+update
+```sql
+-- 更新指定条件的数据
+UPDATE `students` SET `name`="zhangsan",`age` = 10 WHERE id = 1
+
+-- 更新表中所有数据
+UPDATE `students` SET `name`="zhangsan",`age` = 10
+
+-- 读取一个变量然后赋值
+UPDATE `students` SET `birthday`=current_time ,`age` = 10
+
+```
+
+#### 3.3 删除
+- delete
+```sql
+-- 清空整张表
+delete from `xxx`
+
+-- 删除指定数据
+delete from `xxx` where id=123
+```
+- truncate
+清除一张表的数据，保留表的结构和索引不变
+```sql
+-- 清空整张表
+truncate table `xxx`
+```
+
+##### 3.3.1 delete 和 truncate 的区别
+**相同点：**
+都可以用于删除表的数据，
+不会影响表的结构
+
+**不同点：**
+- 使用`truncate`清空表后，自增列计数器重置；使用`delete`清空表后，自增计数器不重置
+- 不影响事务
+
+##### 3.3.2 使用delete删除数据后，重启数据库的现象？？？？（存疑）
+- InnoDB，自增从1开始（存在内存中，断电即失）
+- MyISAM，继续从上一个自增量开始（存在文件中，不会丢失）
+
+
+### 4、where条件判断
+
+| 操作符 | 含义 |
+| -- | -- |
+=           | 等于
+<> 或 !=    | 不等于
+\>          | 大于
+<           | 小于
+\>=         | 大于等于
+<=          | 小于等于
+between and | 闭区间
+and         | 与(多条件同时满足)
+or          | 或（多条件满足一个即可）
 
 
 
