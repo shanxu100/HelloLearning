@@ -12,6 +12,22 @@ CREATE DATABASE IF NOT EXISTS `school` CHARACTER SET utf8 COLLATE utf8_general_c
 show create database `DBName`
 ```
 
+#### 1.3 where条件判断
+
+| 操作符 | 含义 |
+| -- | -- |
+=           | 等于
+<> 或 !=    | 不等于
+\>          | 大于
+<           | 小于
+\>=         | 大于等于
+<=          | 小于等于
+between and | 闭区间
+and         | 与(多条件同时满足)
+or          | 或（多条件满足一个即可）
+
+
+
 ### 2、表
 
 #### 2.1 创建一张数据表
@@ -66,7 +82,7 @@ DROP TABLE IF EXISTS `Students`
 重命名一个表的字段
 不能修改约束和类型？？？？存疑，经过验证是可以的
 
-### 3、DML语言
+### 3、DML 语言
 增、删、改
 
 #### 3.1 插入
@@ -131,19 +147,31 @@ truncate table `xxx`
 - MyISAM，继续从上一个自增量开始（存在文件中，不会丢失）
 
 
-### 4、where条件判断
+### 4、DQL 语言
+Data Query Language
 
-| 操作符 | 含义 |
-| -- | -- |
-=           | 等于
-<> 或 !=    | 不等于
-\>          | 大于
-<           | 小于
-\>=         | 大于等于
-<=          | 小于等于
-between and | 闭区间
-and         | 与(多条件同时满足)
-or          | 或（多条件满足一个即可）
+```sql
+
+-- 基本查询举例
+
+-- 去重 distinct
+SELECT DISTINCT pwd FROM `students` 
+
+-- 别名：AS 给表或字段起别名
+SELECT `name` AS n,`pwd` AS p FROM students WHERE `name`="gsx"
+
+-- 函数：CONCAT(a,b) 将a和b拼接成一个字符串输出
+SELECT CONCAT('name is ',`name`) AS `n`,CONCAT(`pwd`,' is pwd') AS `p` FROM students WHERE `name`="gsx1"
+
+-- 表达式：用来计算
+SELECT 1+1 AS result 
+SELECT `name`, `age` AS '修改前',`age`+1 AS '修改后' FROM `students` WHERE `pwd`="123456"
+
+-- 变量：查询自增步长
+SELECT @@auto_increment_increment
+
+```
+
 
 
 

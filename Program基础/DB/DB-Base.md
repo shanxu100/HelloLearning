@@ -61,7 +61,10 @@ https://docs.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msv
 ```sql
 
 -- 列出所有数据库
-show databases;
+SHOW DATABASES
+
+-- 查询数据库版本
+SELECT VERSION();
 
 -- 创建数据库
 -- create database DBName
@@ -154,8 +157,8 @@ timestamp   | 时间戳，毫秒
 | 表空间大小 | 较大，约为MyISAM的两倍 | 较小 
 
 使用场景：  
-MyISAM：节约空间，速度较快  
-InnoDB：安全性高，支持事务的处理，支持多表多用户操作  
+- MyISAM：节约空间，速度较快  
+- InnoDB：安全性高，支持事务的处理，支持多表多用户操作  
 
 ### 5.2 两种引擎对应存储文件的区别
 对于MySql数据库，所有的数据文件均存放在 `my.ini` 文件中指定的`data`目录中  
@@ -203,8 +206,7 @@ ADD CONSTRAINT `FK_gradeid` FOREIGN KEY(`gradeid`) REFERENCES `Grade`(`gradeid`)
 character-set-server=utf8
 ```
 
-
-#### 6.2 在实际应用中，数据库中每张表中经常存在的几个字段
+#### 6.5 在实际应用中，数据库中每张表中经常存在的几个字段
 | 字段名称 | 描述 |
 | -- | -- |
 id          | 主键
@@ -212,6 +214,17 @@ version     | 乐观锁
 is_delete   | 伪删除，1表示这个记录已经在业务上被删除，但实际依然存在数据库中
 gmt_create  | 创建时间
 gmt_update  | 修改时间
+
+#### 6.6 常见约束
+主键约束 Primary Key
+外键约束 Foreign Key
+唯一索引 Unique Key
+index 索引 Key
+
+
+#### 6.7 SQL语句中，单引号和双引号的区别
+
+
 
 
 
