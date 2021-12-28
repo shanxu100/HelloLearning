@@ -194,8 +194,9 @@ ADD CONSTRAINT `FK_gradeid` FOREIGN KEY(`gradeid`) REFERENCES `Grade`(`gradeid`)
 ### 6、FAQ
 #### 6.1 tips
 1. mysql关键字不区分大小写
-2. 表的名称和字段的名称，使用反引号``包起来
-3. 字符串使用单引号''包起来
+2. 表名、字段名也不区分大小写
+3. 表的名称和字段的名称，使用反引号``包起来
+4. 字符串使用单引号''包起来
 
 #### 6.2 int(3) 和 varchar(3)，中这个3有什么意义
 
@@ -224,6 +225,8 @@ index 索引 Key
 
 #### 6.7 SQL语句中，单引号和双引号的区别
 
+
+#### 6.8 DML、DDL和DQL是什么
 
 
 
