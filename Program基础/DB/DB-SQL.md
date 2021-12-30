@@ -121,6 +121,17 @@ truncate table `xxx`
 
 ### 4、DQL 语言
 Data Query Language
+```sql
+-- 注意这些关键字的顺序，不能颠倒
+SELECT ...
+FROM ...
+  WHERE ...
+  GROUP BY ...
+  HAVING ...
+  ORDER BY ...
+  LIMIT ...
+
+```
 
 #### 4.1 基本查询举例
 
@@ -145,6 +156,11 @@ SELECT @@auto_increment_increment
 ```
 
 #### 4.2 连表查询
+
+关于表连接理论的7中不同方式：
+![](assets/2021-12-28-23-15-47.png)
+
+
 - 内连接(join 或 inner join)
 ```sql
 A join B on A.a = B.b 
@@ -158,7 +174,51 @@ A join B on A.a = B.b
 
 - 笛卡尔积
 
-![](assets/2021-12-28-23-15-47.png)
+
+- 自连接
+自己与自己连接：一张表看成两张不同表，根据key进行连接
+
+#### 4.3 排序与分页
+``` sql
+-- 排序 order by
+-- ASC 升序; DESC 降序
+SELECT * FROM `students` 
+ORDER BY `age` ASC
+
+-- 分页 
+-- 语法:limit 数据（看成数组）起始下标,偏移个数
+SELECT * FROM `students` LIMIT 3,5
+
+
+```
+
+
+#### 4.4 子查询（嵌套查询）
+
+sql查询优先级？？？？待验证
+查询过程是“由内而外”的，即先执行子查询，再执行外部的查询
+
+```sql
+-- 查询 result 表中 数据结构 课程的所有信息
+
+-- 方式一：联表查询
+SELECT r.studentNo,s.subNo
+FROM `result`  AS r 
+INNER JOIN `subject` AS s
+ON r.subjectNo = s.subjectNo
+WHERE s.subName = '数据结构'
+
+-- 方式二：嵌套查询
+SELECT * FROM `result`
+WHERE `subNo` = (
+  SELECT `subNo` FROM `subject`
+  WHERE `subName` = '数据结构'
+)
+
+```
+
+
+
 
 ### 5、 where条件判断
 
@@ -201,7 +261,7 @@ select * from `student` where not age = 10;
 `IS NOT NULL`   | 不等于
 `between and`   | 闭区间
 `like`          | 字符匹配，`%`:0-n个字符，`_`:匹配1个字符
-`in`            | a in(v1,v2,v3...)，表示 a为其中一个值的时候即为真
+`in`            | `a in(v1,v2,v3...)`，表示 `a`为其中一个值的时候即为真
 
 ```sql
 -- 举例
