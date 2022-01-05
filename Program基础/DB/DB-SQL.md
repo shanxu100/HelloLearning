@@ -217,6 +217,83 @@ WHERE `subNo` = (
 
 ```
 
+#### 4.5 SQL函数
+
+- 常用函数
+```sql
+-- 数学运算
+
+-- 绝对值
+SELECT ABS(-1.1)      -- 值为 1.1
+-- 向上取整
+SELECT CEILING(3.14)  -- 值为 4
+-- 向下取整
+SELECT FLOOR(3.14)
+-- 取随机数 [0,1)
+SELECT RAND()
+-- 获取一个数的符号
+SELECT SIGN(-2.1)     -- 0：0，正数：1，负数：-1
+
+
+-- 字符串
+
+-- 返回字符串的长度
+SELECT CHAR_LENGTH("abcdefg")
+-- 字符串拼接
+SELECT CONCAT("I ","am ","a ","boy")
+-- 插入并替换
+SELECT INSERT("abcdefg",1,2,"xyz")  -- xyzcdefg
+SELECT INSERT("abcdefg",1,0,"xyz")  -- xyzabcdefg
+-- 大小写
+SELECT UPPER("abcd")
+SELECT LOWER("ABCD")
+-- 字符串替换：将所有匹配的字符串替换成目标字符串
+SELECT REPLACE("abcccdefg","c","xyz")   -- abxyzxyzxyzdefg
+SELECT REPLACE(`name`,'zhang','xxx') FROM `students` 
+-- 字符串截取
+SELECT SUBSTR("abcdefg",2,3)    -- bcd
+-- 字符串翻转
+SELECT REVERSE("abcd")    -- dcba
+
+-- 日期与时间
+SELECT CURDATE()	    -- 当前日期2022-01-05
+SELECT NOW()		      -- 当前时间 2022-01-05 22:30:40
+SELECT LOCALTIME()	  -- 2022-01-05 22:30:40
+SELECT YEAR(NOW())	  -- 2022
+SELECT MONTH(NOW())	  -- 1
+SELECT DAY(NOW())	    -- 5
+SELECT HOUR(NOW())	  -- 22
+SELECT MINUTE(NOW())	-- 30
+SELECT SECOND(NOW())	-- 40
+
+-- 系统信息
+SELECT VERSION()
+SELECT USER()
+SELECT SYSTEM_USER()
+
+-- MD5
+UPDATE `students` SET `pwd` = MD5(`pwd`)
+SELECT * FROM `students` WHERE `pwd` = MD5('123456')
+
+
+```
+
+- 聚合函数
+```sql
+-- count() 计数
+SELECT COUNT(`id`) FROM `students`
+SELECT COUNT(*) FROM `students`
+SELECT COUNT(1) FROM `students`
+
+-- sum() 求和
+
+-- avg() 求平均值
+
+-- min() 最小值
+
+-- max() 最大值
+
+```
 
 
 
@@ -278,4 +355,10 @@ where age in(10,11,12,13)
 ```
 
 
+### FAQ
+
+#### `count(列名)` `count(*)`和`count(1)` 的区别
+- `count(列名)`：为null时，会忽略计数
+- `count(*)`
+- `count(1)` 
 
