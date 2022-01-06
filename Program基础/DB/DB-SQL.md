@@ -55,6 +55,23 @@ DROP TABLE IF EXISTS `Students`
 重命名一个表的字段
 不能修改约束和类型？？？？存疑，经过验证是可以的
 
+#### 1.4、外键Foreign Key
+##### 创建外键
+- 在创建数据表的时候指定外键
+
+- 对于已经创建的表，可以再添加外键约束
+```sql
+-- ALTER TABLE `表名` ADD CONSTRAINT `约束名` FOREIGN KEY(`作为外键的字段`) REFERENCES `被引用的表`(`作为外键的字段`)
+ALTER TABLE `Students` 
+ADD CONSTRAINT `FK_gradeid` FOREIGN KEY(`gradeid`) REFERENCES `Grade`(`gradeid`)
+```
+
+##### 删除外键
+`Table A` 中的一列 **引用reference** `Table B`中的字段  
+删除时，应该先删除 `Table A`，才能删除`Table B`；而不能直接删除`Table B`。
+
+
+
 ### 3、DML 语言
 增、删、改
 

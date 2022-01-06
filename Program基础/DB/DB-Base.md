@@ -173,22 +173,42 @@ timestamp   | 时间戳，毫秒
   -  `*.MYD` 数据文件
   -  `*.MYI` 索引文件
 
-### 6、外键Foreign Key
-#### 6.1 创建外键
-- 在创建数据表的时候指定外键
+### 6、事务 Transaction
 
-- 对于已经创建的表，可以再添加外键约束
-```sql
--- ALTER TABLE `表名` ADD CONSTRAINT `约束名` FOREIGN KEY(`作为外键的字段`) REFERENCES `被引用的表`(`作为外键的字段`)
-ALTER TABLE `Students` 
-ADD CONSTRAINT `FK_gradeid` FOREIGN KEY(`gradeid`) REFERENCES `Grade`(`gradeid`)
-```
+- 理解：将一组sql看成一个整体，然后执行这个整体
+- 关键：要么都成功，要么都不成功
 
-#### 6.2 删除外键
-`Table A` 中的一列 **引用reference** `Table B`中的字段  
-删除时，应该先删除 `Table A`，才能删除`Table B`；而不能直接删除`Table B`。
+#### 6.1 ACID原则
+[《MySQL 词汇表》](https://dev.mysql.com/doc/refman/8.0/en/glossary.html)
+原子性(Atomicity)、一致性(Consistency)、隔离性(Isolation)、持久性(Durability)
+- 原子性(Atomicity)：一个事务内的所有操作是一个整体，要么全部成功，要么全部失败
+- 一致性(Consistency)：事务开始前和结束后，数据库的完整性约束没有被破坏 。比如A向B转账，不可能A扣了钱，B却没收到。
+- 隔离性(Isolation)：
+- 持久性(Durability)：一旦事务提交成功，事务中的所有操作都必须被持久化到数据库中
 
+#### 6.2 事务的隔离级别
 
+[《MySQL的四种事务隔离级别》](https://www.cnblogs.com/alsf/p/9434967.html)
+
+#### 6.2.1 事务的并发问题
+1. **脏读**：事务A读取了事务B更新的数据，然后B回滚操作，那么A读取到的数据是脏数据
+2. **不可重复读**：事务 A 多次读取同一数据，事务 B 在事务A多次读取的过程中，对数据作了更新并提交，导致事务A多次读取同一数据时，结果 不一致。
+3. **幻读（虚读）**：系统管理员A将数据库中所有学生的成绩从具体分数改为ABCDE等级，但是系统管理员B就在这个时候插入了一条具体分数的记录，当系统管理员A改结束后发现还有一条记录没有改过来，就好像发生了幻觉一样，这就叫幻读。
+
+**注意**：
+- 不可重复读的和幻读很容易混淆：**不可重复读侧重于修改**，**幻读侧重于新增或删除**。
+- 解决不可重复读的问题只需**锁住满足条件的行**，解决幻读需要**锁表**
+
+#### 6.2.2 事务的隔离级别
+
+- 读未提交（read-uncommitted）	
+- 不可重复读（read-committed）	
+- 可重复读（repeatable-read）	
+- 串行化（serializable）	
+
+**注意**：
+- mysql默认的事务隔离级别为repeatable-read
+- mysql默认开启事务的自动提交
 
 
 ### 6、FAQ
