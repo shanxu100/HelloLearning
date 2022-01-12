@@ -196,7 +196,7 @@ Spring 2.5 开始支持。
 
 ## 3、处理响应
 
-### 3.1 返回ModelAndView 
+### 3.1 使用ModelAndView，可同时返回数据和视图
 使用```@Controller```修饰的类，如
 ```java
 @Controller
@@ -209,11 +209,34 @@ public class TestController {
         // 返回一个视图名称
         return "testPage";
     }
+
+    @RequestMapping("/test2")
+    public ModelAndView test2() {
+        // 通过 ModelAndView 设置一个视同名称
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("myMsg","3453353");
+        mv.setViewName("testPage");
+        return mv;
+    }
 }
 ```
+### 3.2 返回的String直接响应给客户端:
+    1. 使用`@ResponseBody`修饰类或者方法
+    2. 使用`@RestController`修饰类
+```java
+@Controller
+public class TestController {
 
-
-### 3.2 返回String
+    @RequestMapping("/test")
+    @ResponseBody
+    public String getTest(Model model) {
+        // 该方法的参数可以很灵活，详见requestMapping的用法
+        model.addAttribute("msg","hfllgslgj");
+        // 返回一个视图名称
+        return "testPage";
+    }
+}
+```
 
 
 ## 4、Spring中的配置文件
@@ -268,7 +291,7 @@ spingMvc.xml文件中主要的工作是：启动注解、扫描controller包注�
 ### Controller 相关
 案例参考：[《Controller方法返回值以及部分注解的使用》](https://zhuanlan.zhihu.com/p/42790384)
 - ```@Controller```：修饰类和方法
-- ```@ResponseBody```：修饰类和方法
+- ```@ResponseBody```：修饰类和方法。**若方法返回String，则将这个字符串直接返回请求方，而不是表示一个视图**
 - ```@RestController```：等于 @Controller + @ResponseBody
 
 ### RequestMapping 相关

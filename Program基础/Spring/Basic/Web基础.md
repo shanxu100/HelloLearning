@@ -53,12 +53,12 @@ JavaWeb项目目录结构：
 具体使用，见下面几个例子：
 
 - 基本使用：
-```xml
+    ```xml
     <servlet-mapping>
         <servlet-name>first-servlet</servlet-name>
         <url-pattern>/test/*</url-pattern>
     </servlet-mapping>
-```
+    ```
 http://localhost:8080/m01/test  
 http://localhost:8080/m01/test/xxxxx  
 http://localhost:8080/m01/test/xxxxx/xxx  
@@ -92,35 +92,35 @@ http://localhost:8080/m01/test/xxxxx/xxx
 一个Web app只有一个ServletContext对象，即这个对象是多个Servlet之间共享的。常用的使用场景如下：
 
 - 获取 ServletContext对象
-```java
-ServletContext servletContext = this.getServletContext();
-```
+    ```java
+    ServletContext servletContext = this.getServletContext();
+    ```
 
 - 共享参数
 如：
-```java
-servletContext.setAttribute("myKey", 123456);
-Object obj = servletContext.getAttribute("myKey");
-```` 
+    ```java
+    servletContext.setAttribute("myKey", 123456);
+    Object obj = servletContext.getAttribute("myKey");
+    ```` 
 
 - 获取初始化参数  
-```xml
-<context-param>
-    <!--配置参数-->
-    <param-name>myParam</param-name>
-    <param-value>Zero-Value</param-value>
-</context-param>
-```
-```java
-// 读取参数
-servletContext.getInitParameter("myParam");
-````
+    ```xml
+    <context-param>
+        <!--配置参数-->
+        <param-name>myParam</param-name>
+        <param-value>Zero-Value</param-value>
+    </context-param>
+    ```
+    ```java
+    // 读取参数
+    servletContext.getInitParameter("myParam");
+    ````
 
 - 请求转发
-```java
-// /second-servlet 为需要转发的新的路径
-servletContext.getRequestDispatcher("/second-servlet").forward(request,response);
-```
+    ```java
+    // /second-servlet 为需要转发的新的路径
+    servletContext.getRequestDispatcher("/second-servlet").forward(request,response);
+    ```
 #### 4.1 路径问题：  
 必须以`/`开头，表示从**当前webapp的根路径**进行请求转发  
 
@@ -193,7 +193,7 @@ Cookie myCookie = new Cookie("MyCookName",student.toString());
 response.addCookie(myCookie);
 ```
 #### 7.1 字符问题：
-在Cookie中，某些特殊的字符，例如：空格，方括号，圆括号，等于号（=），逗号，双引号，斜杠，问号，@符号，冒号，分号都不能作为Cookie的内容。
+在Cookie中，某些特殊的字符，例如：`空格，方括号，圆括号，等于号（=），逗号，双引号，斜杠，问号，@符号，冒号，分号`都不能作为Cookie的内容。
 所以，
 - 在添加cookie的时候，可以将value字段通过```URLEncoder.encode(msg,"utf-8");```进行编码
 - 在获取cookie的时候，可以将value字段通过```URLDecoder.decode()(msg,"utf-8");```进行解码
