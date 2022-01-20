@@ -47,7 +47,7 @@ ALTER TABLE `Students` DROP `addition`
 DROP TABLE IF EXISTS `Students` 
 ```
 
-#### 1.3 在修改表的过程中， MODIFY 和 CHANGE 的区别是啥
+#### 1.3 在修改表的过程中， <font color='red'> MODIFY 和 CHANGE 的区别是啥</font>
 - MODIFY
 可以修改表的字段的约束和类型，不能重命名
 
@@ -312,7 +312,7 @@ SELECT COUNT(1) FROM `students`
 
 ```
 
-
+#### 4.6、自定义函数
 
 ### 5、 where条件判断
 
@@ -370,6 +370,19 @@ where age in(10,11,12,13)
 
 
 ```
+
+
+### 6、分析SQL执行效率
+
+语法：EXPLAIN + SQL
+
+如：
+```sql
+EXPLAIN SELECT * FROM students
+```
+
+
+
 
 
 ### FAQ
