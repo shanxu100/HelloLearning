@@ -241,59 +241,6 @@ timestamp   | 时间戳，毫秒
 - Commited：成功执行整个事务；
 
 
-### 7、索引
-**索引（Index）**是帮助MySQL高效获取数据的**数据结构**
-
-#### 7.1 索引的分类
-
-- **主键索引（Primary key）**
-  - 唯一的标识，主键不可重复，且只能有一列作为“主键索引”
-
-- **唯一索引（Unique key）**
-  - 避免出现重复的列出现。可以有多个列标识为“唯一索引”
-
-- **常规索引（KEY 或 Index）**
-  - 默认的。使用`key`或`index`关键字可以设置某一列为“常规索引”
-
-- **全文索引（Full Text）**
-  - MyISAM 数据库引擎才支持，用于快速定位数据
-
-#### 7.2 使用
-```sql
--- 查询一张表的所有索引
-SHOW INDEX FROM xxxx
-
--- 增加索引
--- 方式一：
-ALTER TABLE `表名` ADD UNIQUE KEY `索引名`(`列名`)
---  方式二：·
-CREATE UNIQUE INDEX `索引名` ON `表名`(`列名`)
-
--- 创建表时指定索引，并指定索引名
-CREATE TABLE `Students` (
-  `id` INT(4) NOT NULL AUTO_INCREMENT COMMENT 'id hao',
-  `name` VARCHAR(50) NOT NULL DEFAULT '匿名' COMMENT 'xing ming',
-  `pwd` VARCHAR(50) NOT NULL DEFAULT '123456' COMMENT 'mi ma',
-  `age` INT(4) NOT NULL DEFAULT '0' COMMENT '年龄',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `Name_index`(`name`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8
-
-```
-
-#### 7.3 索引的原理
-
-
-
-
-
-
-
-
-
-
-
-
 ### 6、FAQ
 #### 6.1 tips
 1. mysql关键字不区分大小写
@@ -331,6 +278,8 @@ index 索引 Key
 
 #### 6.8 DML、DDL和DQL是什么
 
+#### ROW_ID?
 
-
+#### 6.9 约束
+实体完整性？？
 
