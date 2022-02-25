@@ -1,9 +1,9 @@
 # Spring基础
 参考：
-[《spring bean是什么》](https://www.awaimai.com/2596.html)
-[《Spring Boot、Spring MVC 和 Spring 有什么区别》](https://juejin.cn/post/7024855197931274276)
-[《Servlet 到 Spring MVC 的简化之路》](https://juejin.cn/post/6844903570681135117)
-[《Nice！终于有人把SpringMVC讲明白了》](https://juejin.cn/post/6992383622342770695)
+[《spring bean是什么》](https://www.awaimai.com/2596.html)  
+[《Spring Boot、Spring MVC 和 Spring 有什么区别》](https://juejin.cn/post/7024855197931274276)  
+[《Servlet 到 Spring MVC 的简化之路》](https://juejin.cn/post/6844903570681135117)  
+[《Nice！终于有人把SpringMVC讲明白了》](https://juejin.cn/post/6992383622342770695)  
 
 ## 1、集合
 
@@ -295,7 +295,7 @@ spingMvc.xml文件中主要的工作是：启动注解、扫描controller包注�
 - ```@RestController```：等于 @Controller + @ResponseBody
 
 ### RequestMapping 相关
-```@RequestMapping```这个注解可以作用在方法上或者是类上，用来指定请求路径
+```@RequestMapping```这个注解可以作用在方法上或者是类上，用来指定请求路径。如果用于类上,表示类中的所有响应请求的方法都是以该地址作为父路径
 - `value` 或 `path` ：添加子路径
 - `method` ： 规定Http的请求方法
 - 衍生：`@GetMapping` `@PostMapping` `@DeleteMapping` `@PutMapping`... = `@RequestMapping` + `method`属性

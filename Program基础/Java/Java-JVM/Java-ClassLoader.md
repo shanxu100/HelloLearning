@@ -11,10 +11,11 @@
   - 准备：给类的静态变量**分配内存并赋“初始值”**
     > **补充：**
     1. 赋“初始值”并非初始化赋值，比如对象的零值是null，int的零值是0，boolean的零值是false等
-    2. 如果是“编译期常量```static final```”，则直接就是定义的初始值
+    2. 如果是“编译期常量`static final`”，则直接就是定义的初始值
   - 解析：将常量池内的符号引用转换成直接引用，即找到类、字段、方法的实际内存地址
-    > 首先需要解释一下符号引用：在编译时，Java 类并不知道所引用的类的实际地址，因此只能使用符号引用来代替。比如 `com.A` 类引用了 `com.B` 类，编译时 A 类并不知道 B 类的实际内存地址，因此只能使用符号 `com.B`。直接引用通过对符号引用进行解析，找到引用的实际内存地址。  
-    > **补充**：
+    > 首先需要解释一下符号引用：在编译时，Java 类并不知道所引用的类的实际地址，因此只能使用符号引用来代替。比如 `com.A` 类引用了 `com.B` 类，编译时 A 类并不知道 B 类的实际内存地址，因此只能使用符号 `com.B`。直接引用通过对符号引用进行解析，找到引用的实际内存地址。    
+
+    **补充**：
     1. 符号引用与虚拟机实现的布局无关，引用的目标并不一定要已经加载到内存中。
     2. 直接引用可以是指向目标的指针，相对偏移量或是一个能间接定位到目标的句柄。如果有了直接引用，那引用的目标必定已经在内存中存在。
 
@@ -36,21 +37,21 @@
 
 >https://juejin.cn/post/6913552625862443022
 
-- **启动类加载器（Bootstrap ClassLoader）**
-主要负责加载Java目录下的核心类，具体是负责加载```<$JAVA_HOME>/jre/lib/rt.jar```里所有的class或```Xbootclassoath```选项指定的jar包。由 **C++** 实现，不是ClassLoader子类。
+- **启动类加载器（`Bootstrap ClassLoader`）**
+主要负责加载Java目录下的核心类，具体是负责加载`<$JAVA_HOME>/jre/lib/rt.jar`里所有的class或`Xbootclassoath`选项指定的jar包。由 **C++** 实现，不是ClassLoader子类。
 
-- **扩展类加载器（Extension ClassLoader）**
-负责加载java平台中扩展功能的一些jar包，包括```<$JAVA_HOME>/jre/lib/ext/*.jar``` 或 ``-Djava.ext.dirs``指定目录下的jar包。
+- **扩展类加载器（`Extension ClassLoader`）**
+负责加载java平台中扩展功能的一些jar包，包括`<$JAVA_HOME>/jre/lib/ext/*.jar` 或 ``-Djava.ext.dirs``指定目录下的jar包。
 
-- **应用程序类加载器 （Application ClassLoader）**
-负责加载classpath中指定的jar包及 ```-Djava.class.path```所指定目录下的类和jar包。它是java应用程序默认的类加载器。
+- **应用程序类加载器 （`Application ClassLoader`）**
+负责加载classpath中指定的jar包及 `-Djava.class.path`所指定目录下的类和jar包。它是java应用程序默认的类加载器。
 
-- **用户自定义类加载器（Custom ClassLoader）**
-通过java.lang.ClassLoader的子类自定义加载class，属于应用程序根据自身需要自定义的ClassLoader，如tomcat、jboss都会根据j2ee规范自行实现ClassLoader。
+- **用户自定义类加载器（`Custom ClassLoader`）**
+通过`java.lang.ClassLoader`的子类自定义加载class，属于应用程序根据自身需要自定义的ClassLoader，如tomcat、jboss都会根据j2ee规范自行实现ClassLoader。
 
 补充：
-- ```用户自定义加载器->应用程序加载器->扩展类加载器->启动类加载器```。他们之间的关系不是继承关系，**是组合关系**
-- ```AppClassLoader```和```ExtClassLoader```都是```Launcher```的静态内部类，都是包访问路径权限的
+- `用户自定义加载器->应用程序加载器->扩展类加载器->启动类加载器`。他们之间的关系不是继承关系，<font color=red>**是组合关系。**</font>
+- `AppClassLoader`和`ExtClassLoader`都是`Launcher`的静态内部类，都是包访问路径权限的
 
 
 ## 3、双亲委派模型
@@ -64,14 +65,14 @@
 如果最下层的子加载器还没找到，那就抛异常。
 
 - 代码逻辑：
-调用下层ClassLoader的loadClass()方法。在该方法中，先调用上一层的ClassLoader的loadClass()方法。
-如果上一层的LoadClass()返回为空，说明没有找到。那么就调用自己的findClass()方法。
-findClass()方法默认抛出一个ClassNotFoundException。**然后被下一层的loadClass()捕获**
-然后，下一层ClassLoader会继续调用自己的findClass()方法。以此类推，直到最下面一层。
-总结：对于自定义的ClassLoader，override findClass()方法不会破坏双亲委派模型；对于更高的要求可以override loadClass()方法。
+调用下层ClassLoader的`loadClass()`方法。在该方法中，先调用上一层的ClassLoader的`loadClass()`方法。
+如果上一层的`LoadClass()`返回为空，说明没有找到。那么就调用自己的`findClass()`方法。
+`findClass()`方法默认抛出一个`ClassNotFoundException`。**然后被下一层的loadClass()捕获**
+然后，下一层ClassLoader会继续调用自己的`findClass()`方法。以此类推，直到最下面一层。
+**总结**：对于自定义的ClassLoader，`override findClass()`方法不会破坏双亲委派模型；对于更高的要求可以`override loadClass()`方法。
 
 - 好处：
-比如加载位于rt.jar包中的类java.lang.Object，不管是哪个加载器加载这个类，最终都是委托给顶层的启动类加载器进行加载，这样就保证了使用不同的类加载器最终得到的都是同样一个Object对象。相反，如果由各个类加载器自行加载的话，会出现多个不同的Object类，会产生混乱。
+比如加载位于`rt.jar`包中的类`java.lang.Object`，不管是哪个加载器加载这个类，最终都是委托给顶层的启动类加载器进行加载，这样就保证了使用不同的类加载器最终得到的都是同样一个Object对象。相反，如果由各个类加载器自行加载的话，会出现多个不同的Object类，会产生混乱。
 
 **注意：比较两个类是否相等，得在“被同一个类加载器中加载”才有意义。即被两个类加载器加载的同一个类，JVM认为是不相同的类。**
 
@@ -80,16 +81,16 @@ findClass()方法默认抛出一个ClassNotFoundException。**然后被下一层
 - 加载该类的ClassLoader被回收
 - 当代表一个类的Class对象（所有的java类都有一个静态属性class，它代表这个类的class对象）不再被引用
 
-如果以上三个条件全部满足，jvm就会在方法区垃圾回收的时候对类进行卸载，类的卸载过程其实就是在方法区中清空类信息，java类的整个生命周期就结束了。
+如果以上三个条件全部满足，jvm就会**在方法区垃圾回收的时候**对类进行卸载，类的卸载过程其实就是在方法区中清空类信息，java类的整个生命周期就结束了。
 
 注：
-1. 由用户自定义的类加载器加载的类是可以被卸载的，由Java虚拟机自带的类加载器所加载的类，在虚拟机的生命周期中，始终不会被卸载  
+1. 由用户自定义的类加载器加载的类是可以被卸载的。由Java虚拟机自带的类加载器所加载的类，在虚拟机的生命周期中，始终不会被卸载  
 2. 类卸载是JVM执行的，一般不需要关心  
 
 ## FAQ：
 
-**classpath 环境变量**
-JVM 根据 classpath 来查找类，而 Dalvik 利用 DexPathList 来查找并加载类
+**`classpath` 环境变量**
+JVM 根据 `classpath` 来查找类，而 `Dalvik` 利用 `DexPathList` 来查找并加载类
 **Class文件结构**
 4字节魔数：0xCAFEBABE + 4字节版本号：次版本号\主版本号 + 常量池（主要包括字面量和符号引用）+ 访问标志 + 字段、方法、属性集合
 
