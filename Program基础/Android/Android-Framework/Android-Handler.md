@@ -1,10 +1,11 @@
 # Handler机制
-参考：  
-[《一文读懂 Handler 机制全家桶》](https://juejin.cn/post/6901682664617705485)  
-[《换个姿势，带着问题看Handler》](https://juejin.cn/post/6844904150140977165)  
-[《MessageQueue原理分析》](https://www.jianshu.com/p/f00c3fa9e6c0)  
+**参考：** 
+- [《一文读懂 Handler 机制全家桶》](https://juejin.cn/post/6901682664617705485)  
+- [《换个姿势，带着问题看Handler》](https://juejin.cn/post/6844904150140977165)  
+- [《MessageQueue原理分析》](https://www.jianshu.com/p/f00c3fa9e6c0)  
+- [《Android Handler Looper机制》](https://blog.dreamtobe.cn/2016/03/11/android_handler_looper/)
 
-简介：
+**简介：**
 Android是一个事件驱动的模型，只有源源不断的事件产生与处理才能推动应用的进行。
 Handler是Android提供的一套线程通信的方式，是一种 **“单线程消息队列机制”** 。主要由 ```Handler、MessageQueue、Looper``` 组成：每一个消息通过Handler的post或send接口进入MessageQueue。Looper本质是一个死循环，不断的从MessageQueue中取消息处理。当没有新的消息（或未到唤醒时间）时，```messageQueue.next()```接口就会阻塞。有消息处理时，则会从MessageQueue中取出来，交给Handler处理
 
@@ -182,6 +183,17 @@ public void dispatchMessage(@NonNull Message msg) {
 
 ### Android UI更新机制(GUI) 为何设计成了单线程的？
 Android 需要在主线程才能更新UI。 如果多个线程都能更新UI，势必要「加锁」。还不如采用「单线程消息队列机制」
+
+### 一个Looper关联了多个handler，会怎样？
+
+### handler机制会不会引起内存泄漏
+原因：
+由于Handler有可能会被Looper#mQueue#mMessages#target引用，而很有可能由于消息还未到达处理的时刻，导致引用会被长期持有。  
+如果Handler是一个非静态内部类，就会持有一个外部类实例的引用，进而导致外部类很有可能出现无法及时gc的问题。
+
+解决:
+直接静态化内部类，这样内部类Handler就不再持有外部类实例的引用。  
+再在Handler的构造函数中以弱引用(当所指实例不存在强引用与软引用后，GC时会自动回弱引用指向的实例)传入外部类供使用即可。
 
 ### Handler的postDelay操作是如何实现的(腾讯面试)
 

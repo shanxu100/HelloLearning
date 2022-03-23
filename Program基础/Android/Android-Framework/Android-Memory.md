@@ -16,7 +16,7 @@ adb shell heapgrowthlimit | grep heap
 ## 2、查看特定时间点的内存使用情况
 ### 2.1 命令：
 ```bash
-adb shell dumpsys meminfo $package_name|$pid
+adb shell dumpsys meminfo $package_name|$pid
 ```
 ### 2.2 输出
 ```bash
@@ -114,7 +114,7 @@ adb shell dumpsys procstats [--hours $N] [$package_name]
 ### 4.2 how：内存泄漏的原因
 - 静态变量持有Activity或Context的引用
 - 单例模式中持有Activity或Context的引用
-- 非静态内部类或匿名内部类的静态实例（默认持有外部类的引用）持有Activity或Context的引用
+- **非静态内部类或匿名内部类的静态实例**（默认持有外部类的引用）持有Activity或Context的引用
 - 资源未关闭：file、stream、bitmap等  
 总结：**A类实例引用B类实例，而A类实例的生命周期大于B类实例。那么当B类生命周期结束后不再使用时，由于A类持有引用，导致不能及时回收B类实例。**
 
