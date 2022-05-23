@@ -1,5 +1,6 @@
 # Spring基础
 参考：
+[《深入浅出Spring 框架，原来以前白学了！》](https://juejin.cn/post/7095532056632885284)
 [《spring bean是什么》](https://www.awaimai.com/2596.html)  
 [《Spring Boot、Spring MVC 和 Spring 有什么区别》](https://juejin.cn/post/7024855197931274276)  
 [《Servlet 到 Spring MVC 的简化之路》](https://juejin.cn/post/6844903570681135117)  
@@ -42,11 +43,15 @@
 ## 什么是控制反转IoC
 控制反转英文全称：Inversion of Control，简称就是IoC，是一种思想。 
 **控制**，即由谁来控制对象的创建和管理；**反转**，即由传统的程序进行控制，变成了由Spring容器进行控制。
-所以，控制反转就是由Spring容器控制Bean的创建、管理和装配，而程序本身负责接收并使用对象即可。
-实现IoC的方法有很多，依赖注入（DI）方式是其中之一
+所以，控制反转是指**不通过 new 关键字来创建对象，而是通过 IoC 容器(Spring 框架) 来帮助我们实例化对象**。
+实现IoC的方法有很多，依赖注入（DI）方式是其中之一。  
+
+![](assets/2022-05-23-15-56-21.png)
+注：两方之间不互相依赖，由第三方容器来管理相关资源
 
 ## 什么是AOP
-
+面向切面编程（Aspect oriented programming，AOP），AOP 是 OOP（面向对象编程）的一种延续。
+AOP 主要用来解决：在不改变原有业务逻辑的情况下，增强横切逻辑代码（常用的场景包括：事务控制、权限校验、日志等等），降低耦合。
 
 ### 什么是Restful
 Restful是一种资源定位及资源操作的一种风格，不是一种协议。使用Restful风格进行开发，可以使系统更加简洁、更加有层次

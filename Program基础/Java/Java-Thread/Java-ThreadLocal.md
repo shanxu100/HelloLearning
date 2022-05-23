@@ -5,12 +5,13 @@
 3. [《图解分析ThreadLocal的原理与应用场景》](https://juejin.cn/post/6858570628900126728)
 4. [《被大厂面试官连环炮轰炸的ThreadLocal （吃透源码的每一个细节和设计原理）》](https://juejin.cn/post/6844903974454329358)
 5. [《ThreadLocal使用与原理》](https://juejin.cn/post/6959333602748268575)
+6. [《ThreadLocal夺命11连问》](https://juejin.cn/post/7097754858593189901)
 
 **需求**：为线程创建自己的“局部变量”，这样可以避免多个线程对同一个变量的竞争，保证线程安全（ThreadLocal目的并不是为了实现对一个变量的互斥访问）
 
 **作用**：针对同一个变量，```ThreadLocal`类可以为每一个线程创建一个副本。**多线程中，每条线程都需要拥有一个同名变量，该变量在不同线程中独立存取，互不影响。**
 
-**原理**：在`ThreadLocal`类中定义了一个静态内部类`ThreadLocalMap`。每一个Thread都有一个`ThreadLocalMap`类型的成员变量`threadLocals`。Thread就是用threadLocals来存储每一个线程中变量的副本。threadLocals本质是一个 `Entry数组`，每个数组元素是一个键值对：key为threadLocal对象，vlaue为存储的值，即我们根据threadLocal实例，来找到对应线程的变量副本。
+**原理**：<font color="red">在`ThreadLocal`类中定义了一个静态内部类`ThreadLocalMap`。每一个Thread都有一个`ThreadLocalMap`类型的成员变量`threadLocals`。Thread就是用threadLocals来存储每一个线程中变量的副本。threadLocals本质是一个 `Entry数组`，每个数组元素是一个键值对：key为threadLocal对象，vlaue为存储的值。即我们根据threadLocal实例，来找到对应线程的变量副本。</font>
 
 
 ## 1. ThreadLocal的使用
@@ -75,11 +76,11 @@ threadLocal.remove();
 
 #### 4.1 常见的Hash冲突解决算法
 1. 开放定址法
-   当关键字key使用p=H(key)出现冲突时，以p为基础，按照某种规则，产生另一个哈希地址p1、p2...
-   常用的方法有：线行探查法、平方探查法和双散列函数探查法等
+   当关键字key使用`p=H(key)`出现冲突时，以p为基础，按照某种规则，产生另一个哈希地址p1、p2...
+   常用的方法有：**线行探查法**、**平方探查法**和**双散列函数探查法**等
 
 2. 再哈希法：
-   同时构造多个不同的哈希函数，当使用 H(key) 发生冲突时，使用准备好的 H2(key)、H3(key)...重新计算哈希值
+   同时构造多个不同的哈希函数，当使用 `H(key)` 发生冲突时，使用准备好的 `H2(key)`、`H3(key)`...重新计算哈希值
 
 3. 链地址法：
    将哈希值相同的元素构成一个同义词的单链表，并将单链表的头指针存放在哈希表的第i个单元中；查找、插入和删除主要在同义词链表中进行。链表法适用于经常进行插入和删除的情况

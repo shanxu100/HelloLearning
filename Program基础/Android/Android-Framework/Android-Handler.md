@@ -13,8 +13,10 @@ Handler是Android提供的一套线程通信的方式，是一种 **“单线程
 ## 1、 Looper
 
 ### 1.1 ```Looper.prepare()```
-初始化当前线程的```Looper```，然后**保存到ThreadLocal中**。一个线程只能调用一次```Looper.prepare()```接口
-核心代码如下（伪代码）：
+初始化当前线程的```Looper```对象，然后将其**保存到ThreadLocal中**，即将Looper对象和当前线程绑定了一起  
+一个线程只能调用一次```Looper.prepare()```接口，否则会抛异常。  
+
+核心代码如下：
 ```java
 private static void prepare(boolean quitAllowed) {
     if (sThreadLocal.get() != null) {
@@ -149,24 +151,13 @@ public void dispatchMessage(@NonNull Message msg) {
 从上述代码可以看到，这三个地方是有先后顺序的，即：**```1 > 2 > 3```**
 
 
-
-## 4 HandlerThread
-
-本质上是一个继承了**Thread的线程类**。
-通过创建HandlerThread**获取looper对象**，传递给Handler对象，执行异步任务。在HandlerThread中通过**Looper.prepare()**来创建消息队列，并通过**Looper.loop()**来开启消息循环。创建HandlerThread后必须先调用start()方法，才能调用getLooper()获取Looper对象。
-
-**HandlerThread封装了Looper对象，使我们不用关心Looper的开启和释放的细节问题**。如果不用HandlerThread的话，需要手动Thread子类并且去调用Looper.prepare()和Looper.loop()这些方法。
-
-#### 3.1.4 FAQ：
-
-1. 主线程Handler的实现细节？
+### 3.3 主线程Handler的实现细节？
 	- Looper.loop()方法开启了一个死循环，不断调用MessageQueue的next()方法，即```queue.next()```
 	- handler发送消息：post系列方法 --> send系列方法 --> 向MessageQueue中插入数据。
 	- handler处理消息：Looper在loop()方法中通过```queue.next()```取出message，然后**交给与之关联的Handler处理**,即调用```msg.target.dispatchMessage()```（target就是handler对像）。
 	- dispatchMessage：如果msg的callback不为null，就处理。否则，handler的callback不为null，就让其处理。否则调用handleMessage()方法。
 	- Handler的子类必须override handleMessage()方法，负责处理message
 
-2. 
 
 
 
@@ -175,6 +166,7 @@ public void dispatchMessage(@NonNull Message msg) {
 ## FAQ
 
 ### Looper.prepare()做了什么事情
+见 1.1 
 
 ### 为什么推荐使用```Message.obtain()```或```handler.obtainMessage()``` 方法创建对象，而不直接new一个对象
 

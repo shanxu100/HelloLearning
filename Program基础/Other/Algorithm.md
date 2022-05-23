@@ -298,6 +298,12 @@ B+树
 判断回文数
 
 ```java
+// 方式一：
+    String s1 = "xxxxxx";
+    StringBuilder s2 = new StringBuilder(s1).reverse();
+    return s1.toString().equals(s2.toString());
+
+// 方式二：
     boolean isHuiwen(char[] chars) {
         for (int i = 0; i < chars.length / 2; i++) {
             if (chars[i] != chars[chars.length - 1 - i]) {

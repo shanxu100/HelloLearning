@@ -112,8 +112,34 @@ set_target_properties( # Specifies the target library.
 include_directories
 
 
+set(headers ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(Welcome PUBLIC
+        ${headers}
+        ${headers}/Bar
+        ${headers}/Foo)
+
+
+target_compile_features(Exe3 PRIVATE cxx_std_11)
 ```
 
+
+## 补充
+
+make命令---MakeFIle 文件
+
+cmake命令---CMakeList.txt 文件
+
+// 设置某一个sdk的C++版本
+target_compile_features(Foo PRIVATE cxx_std_11)
+ 
+// Enable C++11
+set(CMAKE_CXX_STANDARD 11)
+
+// 执行命令时指定
+cmake -DCMAKE_CXX_STANDARD=11
+
+
+ ${CMAKE_SOURCE_DIR} 当前CMakeLists.txt文件的地址
 
 
 

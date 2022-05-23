@@ -5,6 +5,7 @@
 [《锁介绍名词解释》](https://blog.csdn.net/qq_31564573/article/details/107738571)  
 [《并发扣款一致性优化，CAS下ABA问题，这个话题还没聊完！！！》](https://juejin.cn/post/6920098675700006925)  
 [《面试必备-线程中的锁》](https://juejin.cn/post/6987019348309360654)
+[《面试突击44：volatile 有什么用?》](https://juejin.cn/post/7094087043013640228)
 
 
 ## 2、锁的分类
@@ -92,6 +93,32 @@ Java中```ReentrantLock```和```synchronized```都是可重入锁。
   3. 步骤3 线程工作内存把count值保存到主内存有可能某一时刻2个线程在步骤1读取到的值都是100，执行完步骤2得到的值都是101，最后刷新了2次101保存到主内存。
 
 - **禁止进行指令重排序**：为了获取更好的性能，编译器或运行时环境（处理器）可能会对指令重新排序。
+以单例模式为例：
+```java
+public class Singleton {
+    private Singleton() {}
+    private static Singleton instance = null;   //此处不添加 volatile
+    public static Singleton getInstance() {
+        if (instance == null) {                 // 位置1
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton(); // 位置2
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+在`位置2`处创建对象的过程，其实际执行却分为以下 3 步：
+1. 创建内存空间
+2. 在内存空间中初始化对象 `Singleton`
+3. 将内存地址赋值给`instance`对象（执行了此步骤，`instance` 就不等于 `null` 了）
+
+如果此变量不加 `volatile`，那么 线程1 在执行到上述代码的`第2处`时就可能会执行指令重排序：将原本是 1、2、3 的执行顺序，重排为 1、3、2。
+但是特殊情况下，线程1 在执行完第 3 步之后，如果来了 线程2 执行到上述代码的`第1处`，判断 `instance` 对象已经不为 `null`。
+但此时 线程1 还未将对象实例化完，那么 线程2 将会得到一个**被实例化“一半”的对象**，从而导致程序执行出错。
+这就是为什么要给私有变量添加 `volatile` 的原因了。
 
 ### 3.2 ```synchronized```和```volatile```的区别
 

@@ -1,4 +1,9 @@
 # 线程相关
+[《Android HandlerThread 总结使用》](https://www.cnblogs.com/zhaoyanjun/p/6062880.html)  
+[《Android HandlerThread 完全解析》](https://blog.csdn.net/lmj623565791/article/details/47079737/)  
+[《Handler一定要在主线程实例化吗?new Handler()和new Handler(Looper.getMainLooper())的区别》](https://blog.csdn.net/thanklife/article/details/17006865)  
+[《15个顶级Java多线程面试题及回答》](http://ifeve.com/15-java-faq/)  
+[《5000字、24张图带你彻底理解Java中的21种锁》](https://mp.weixin.qq.com/s/o6MWPz-asKswWM5cyGeDYg)  
 
 ## 1、Linux线程基础
 - 线程与进程的区别
@@ -35,18 +40,101 @@ Handler + MessageQueue + Looper
 
 
 
-### 3.2 IntentService
+### 3.2 `IntentService`
 
-- 原理：IntentService是一个**抽象类**，封装了HandlerThread和Handler，负责处理耗时的任务。任务执行完毕后会自行停止。在onCreate()方法中开启了一个HandlerThread线程，之后通过HandlerThread的Looper初始化了一个Handler，负责处理耗时操作。通过startService()方法启动，在handler中调用**抽象方法onHandleIntent()**，该方法执行完成后自动调用stopself()方法停止
+- 原理：`IntentService`是一个**抽象类**，封装了`HandlerThread`和`Handler`，负责处理耗时的任务。任务执行完毕后会自行停止。在`onCreate()`方法中开启了一个`HandlerThread`线程，之后通过`HandlerThread`的Looper初始化了一个Handler，负责处理耗时操作。通过`startService()`方法启动，在handler中调用**抽象方法`onHandleIntent()`**，该方法执行完成后自动调用`stopself()`方法停止
 
-- override onHandleIntent() 方法
+- override `onHandleIntent()` 方法
 
 - 优点：一方面不需要自己去创建线程，另一方面不需要考虑在什么时候关闭该Service
 
 
 
+## 4 `HandlerThread`详解
+
+`HandlerThread`本质上是一个继承了**Thread的线程类**。
+通过创建HandlerThread**获取looper对象**，传递给Handler对象，执行异步任务。在HandlerThread中通过`Looper.prepare()`来创建消息队列，并通过`Looper.loop()`来开启消息循环。创建HandlerThread后必须先调用`start()`方法，才能调用`getLooper()`获取Looper对象。
+
+**HandlerThread封装了Looper对象，使我们不用关心Looper的开启和释放的细节问题**。如果不用HandlerThread的话，需要手动Thread子类并且去调用`Looper.prepare()`和`Looper.loop()`这些方法。
+
+```java
+public class HandlerThread extends Thread {
+
+	// 略...
+    
+    protected void onLooperPrepared() {
+    }
+
+    @Override
+    public void run() {
+        mTid = Process.myTid();
+		Looper.prepare();
+
+		// 关键点：1
+        synchronized (this) {
+            mLooper = Looper.myLooper();
+            notifyAll();
+        }
+        Process.setThreadPriority(mPriority);
+        onLooperPrepared();
+        Looper.loop();
+        mTid = -1;
+    }
+    
+    public Looper getLooper() {
+        if (!isAlive()) {
+            return null;
+        }
+        
+        // If the thread has been started, wait until the looper has been created.
+        synchronized (this) {
+            while (isAlive() && mLooper == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+        return mLooper;
+    }
+
+    /**
+     * @hide
+     */
+    @NonNull
+    public Handler getThreadHandler() {
+		// 略
+    }
+
+    public boolean quit() {
+        Looper looper = getLooper();
+        if (looper != null) {
+            looper.quit();
+            return true;
+        }
+        return false;
+    }
 
 
+    public boolean quitSafely() {
+        Looper looper = getLooper();
+        if (looper != null) {
+            looper.quitSafely();
+            return true;
+        }
+        return false;
+    }
 
+    public int getThreadId() {
+        return mTid;
+    }
+}
+
+```
+
+### 4.1 为什么在`run()`方法里面当mLooper创建完成后有个`notifyAll()`，`getLooper()`中有个`wait()`?
+因为使用HandlerThread时，`run()`方法在新创建中的Thread中执行的，此处暂称为T1；
+在调用HandlerThread的`getLooper()`方法时，是在另一个线程中执行（如主线程），此处暂称为T2；
+面对上述T1和T2的同步问题，为了保证T2线程中调用`getLooper()`方法需要保证Looper已经创建完成，所以增加了`synchronized`、`notifyAll()`、`wait()`。
 
 

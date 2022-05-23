@@ -91,6 +91,7 @@ int resultRow = ps.executeUpdate();
 
 特殊字符进行转义
 
+思考：存储过程 ORM框架会有SQL注入问题么？
 
 ### 4、CallableStatement
 

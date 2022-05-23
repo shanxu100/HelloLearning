@@ -1,27 +1,41 @@
 # Java IO
 
+- [《Java socket字节流传输的示例》](https://www.cnblogs.com/fomeiherz/p/5878936.html)
+- [《设计模式 | 装饰者模式及典型应用》](https://blog.csdn.net/wwwdc1012/article/details/82764333)
+- [《基本功：超全面 IO 流教程，小白也能看懂》](https://mp.weixin.qq.com/s/ljwuyJHVas1entgieFIpeA)
+
 ## 基本结构
 
- > https://blog.csdn.net/wwwdc1012/article/details/82764333
+input和output的区别：
+- input/输入：数据从数据源加载到内存。
+- output/输出：数据从内存写回到数据源。
+
+字节流和字符流的使用场景：
+- 对于一些二进制数据（如图片，mp4等）比较适合用字节流的方式进行加载
+- 字符流通常比较适合用于读取一些文本数据（如txt）。因为这类资源通常都是以字符类型数据进行存储，所以使用字符流要比字节流更加高效。
+
 
 - javaIO(注意：装饰者模式)
 	- 字节流
 		- InputStream
-			- FileInputStream：具体的组件，是被装饰者
+			- FileInputStream：被装饰者
 			- PipedInputStream：被装饰者
 			- ByteArrayInputStream：被装饰者
 			- FilterInputStream：抽象的装饰类
-				- BufferedInputStream：具体的装饰类
-				- DataInputStream：具体的装饰类
+				- BufferedInputStream：**具体的装饰类**
+				- DataInputStream：**具体的装饰类**
 
-		- OutputStream（同理）
+		- OutputStream（同上）
 
 	- 字符流
 		- reader
-			- BuffedReader
+			- FileReader
+			- CharArrayReader
+			- PipedReader
 			- StringReader
-			- InputStreamReader
-			- ByteArrayReader
+			- BufferedReader：**具体的装饰类**
+			- InputStreamReader：**具体的装饰类**
+
 		- writer（同理）
 
 --------------------

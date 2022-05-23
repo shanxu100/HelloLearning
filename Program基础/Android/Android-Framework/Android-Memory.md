@@ -2,6 +2,7 @@
 参考：  
 [《dumpsys 查看内存分配》](https://developer.android.com/studio/command-line/dumpsys#ViewingAllocations)
 [《常见导致内存问题的案例》](https://juejin.cn/post/6956183330622701576)
+[《adb shell dumpsys 命令用法》](https://www.jianshu.com/p/d859480613a4)
 
 ## 1、查看Android对App的内存使用限制
 命令：

@@ -146,7 +146,7 @@ new出来的Thread实例，此时线程就进入了初始状态。
 	- 当线程阻塞时，调用```myThread.interrupt()```方法会产生异常。捕获InterruptException异常，然后跳出循环，结束线程。
 	- 当线程运行时，通过```Thread.interrupted()```、```Thread.currentThread().isInterrupted()```或```myThread.isInterrupted()```方法判断是否被终止（和“使用标志位”一个道理）。
 
-注：在结束线程前，记得调用一次notifyAll()方法，唤醒其他所有等待的对象。（这样做更优雅）
+注：在结束线程前，记得调用一次`notifyAll()`方法，唤醒其他所有等待的对象。（这样做更优雅）
 ### 3.2 扩展：
 1. 对于正在运行的进程（比如正在执行while等非阻塞的时候），调用```myThread.interrupt()```方法不会中断该进程，即**该进程会继续执行**。
     因为该方法仅仅是设置一个标志位而已。**使用者需要在线程中判断该标志位，然后自行结束任务**。
